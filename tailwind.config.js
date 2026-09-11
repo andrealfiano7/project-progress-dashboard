@@ -12,6 +12,9 @@ export default {
         heading: ['Outfit', 'Inter', 'sans-serif'],
       },
       colors: {
+        slate: {
+          850: '#151f32',
+        },
         brand: {
           50: '#f0f7ff',
           100: '#e0effe',
