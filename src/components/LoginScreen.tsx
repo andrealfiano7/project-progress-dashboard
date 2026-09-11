@@ -72,7 +72,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   return (
     <div className="relative min-h-screen flex flex-col justify-between p-4 sm:p-6 lg:p-8 z-10 select-none">
       {/* Top Bar: Brand, Live Clock & Theme Switcher */}
-      <div className="w-full max-w-6xl mx-auto flex items-center justify-between gap-3">
+      <div className="w-full max-w-[1760px] mx-auto flex items-center justify-between gap-3">
         <div className="flex items-center space-x-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25">
             <Layers className="w-5 h-5" />
@@ -266,7 +266,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="w-full max-w-6xl mx-auto text-center text-slate-400 text-xs py-2">
+      <div className="w-full max-w-[1760px] mx-auto text-center text-slate-400 text-xs py-2">
         <p>
           &copy; {new Date().getFullYear()} {metadata.institution || 'PT Angkasa Pura Indonesia'}. Dikelola bersama {metadata.contractor || 'Centrois Consulting'}.
         </p>

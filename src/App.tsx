@@ -370,8 +370,8 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Main Dashboard Workspace (elevated above background) */}
-      <main className="relative z-10 no-print flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      {/* Main Dashboard Workspace (lebar maksimal diperluas menjadi 1760px) */}
+      <main className="relative z-10 no-print flex-1 max-w-[1760px] w-full mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* KPI Cards (Always visible as executive anchors) */}
         <KPICards stats={stats} onFilterStatus={handleFilterByKPI} />
 
