@@ -21,9 +21,9 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
     const anim1 = animate(orb1Ref.current, {
       translateX: [-40, 60, 0],
       translateY: [30, -50, 0],
-      scale: [1.15, 0.9, 1],
-      opacity: darkMode ? [0.45, 0.25, 0.4] : [0.35, 0.18, 0.3],
-      duration: 12000,
+      scale: [1.1, 0.95, 1],
+      opacity: darkMode ? [0.25, 0.15, 0.22] : [0.18, 0.1, 0.15],
+      duration: 14000,
       ease: 'inOutSine',
       loop: true,
       alternate: true,
@@ -33,9 +33,9 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
     const anim2 = animate(orb2Ref.current, {
       translateX: [50, -40, 0],
       translateY: [-40, 50, 0],
-      scale: [0.9, 1.2, 1],
-      opacity: darkMode ? [0.35, 0.55, 0.4] : [0.25, 0.4, 0.3],
-      duration: 14000,
+      scale: [0.95, 1.1, 1],
+      opacity: darkMode ? [0.2, 0.3, 0.22] : [0.12, 0.2, 0.14],
+      duration: 16000,
       ease: 'inOutQuad',
       loop: true,
       alternate: true,
@@ -45,9 +45,9 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
     const anim3 = animate(orb3Ref.current, {
       translateX: [-30, 40, 0],
       translateY: [40, -30, 0],
-      scale: [1.1, 0.95, 1],
-      opacity: darkMode ? [0.3, 0.5, 0.35] : [0.2, 0.35, 0.25],
-      duration: 13000,
+      scale: [1.05, 0.95, 1],
+      opacity: darkMode ? [0.15, 0.25, 0.18] : [0.1, 0.18, 0.12],
+      duration: 15000,
       ease: 'inOutSine',
       loop: true,
       alternate: true,
@@ -70,27 +70,27 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
 
     const hAnim = animate(hBeams, {
       translateX: ['-100%', '300%'],
-      opacity: [0, 0.85, 0],
+      opacity: darkMode ? [0, 0.45, 0] : [0, 0.25, 0],
       ease: 'inOutCubic',
-      duration: 5000,
-      delay: stagger(1800),
+      duration: 6000,
+      delay: stagger(2000),
       loop: true,
     });
 
     const vAnim = animate(vBeams, {
       translateY: ['-100%', '300%'],
-      opacity: [0, 0.85, 0],
+      opacity: darkMode ? [0, 0.45, 0] : [0, 0.25, 0],
       ease: 'inOutCubic',
-      duration: 5500,
-      delay: stagger(1500),
+      duration: 6500,
+      delay: stagger(1800),
       loop: true,
     });
 
     const dotAnim = animate(dots, {
-      opacity: [0.1, 0.9, 0.1],
-      scale: [0.8, 1.6, 0.8],
+      opacity: darkMode ? [0.05, 0.35, 0.05] : [0.03, 0.2, 0.03],
+      scale: [0.7, 1.15, 0.7],
       ease: 'inOutQuad',
-      duration: 2500,
+      duration: 3000,
       delay: stagger(200, { from: 'center' }),
       loop: true,
     });
@@ -124,13 +124,21 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
   return (
     <div
       ref={containerRef}
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none transition-colors duration-500"
+      className="pointer-events-none fixed inset-0 -z-50 overflow-hidden select-none transition-colors duration-500"
+      style={{ zIndex: -50 }}
       aria-hidden="true"
     >
+      {/* 0. Solid Canvas Foundation */}
+      <div
+        className={`absolute inset-0 transition-colors duration-500 ${
+          darkMode ? 'bg-[#07090e]' : 'bg-slate-50'
+        }`}
+      />
+
       {/* 1. Next.js Signature Grid Background with Radial Fade Vignette */}
       <div
         className={`absolute inset-0 transition-opacity duration-700 ${
-          darkMode ? 'opacity-90' : 'opacity-70'
+          darkMode ? 'opacity-85' : 'opacity-65'
         }`}
         style={{
           backgroundImage: darkMode
@@ -153,11 +161,11 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
       {/* 2. Interactive Mouse Cursor Spotlight (Signature Vercel / Next.js Glow) */}
       <div
         ref={mouseSpotlightRef}
-        className="absolute -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-[100px] transition-opacity duration-300 opacity-40 dark:opacity-30"
+        className="absolute -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full blur-[120px] transition-opacity duration-300 opacity-25 dark:opacity-20 pointer-events-none"
         style={{
           background: darkMode
-            ? 'radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(14, 165, 233, 0.2) 0%, rgba(99, 102, 241, 0.12) 50%, transparent 70%)',
+            ? 'radial-gradient(circle, rgba(56, 189, 248, 0.2) 0%, rgba(99, 102, 241, 0.12) 50%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(99, 102, 241, 0.08) 50%, transparent 70%)',
           left: '50%',
           top: '30%',
         }}
@@ -266,14 +274,14 @@ export const NextAnimatedBackground: React.FC<NextAnimatedBackgroundProps> = ({ 
         ].map((pt, idx) => (
           <div
             key={idx}
-            className="grid-dot absolute w-1.5 h-1.5 rounded-full -translate-x-1/2 -translate-y-1/2"
+            className="grid-dot absolute w-1 h-1 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none"
             style={{
               left: `${pt.x}px`,
               top: `${pt.y}px`,
               backgroundColor: darkMode ? '#38bdf8' : '#0284c7',
               boxShadow: darkMode
-                ? '0 0 8px rgba(56, 189, 248, 0.8), 0 0 16px rgba(99, 102, 241, 0.5)'
-                : '0 0 6px rgba(14, 165, 233, 0.6)',
+                ? '0 0 6px rgba(56, 189, 248, 0.4)'
+                : '0 0 4px rgba(14, 165, 233, 0.25)',
             }}
           />
         ))}
