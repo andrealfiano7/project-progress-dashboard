@@ -112,30 +112,30 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ data, cutoffWeek }) =>
   }));
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-200 dark:border-slate-800 transition-all">
+    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3.5 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-800 transition-all">
       {/* Header of Chart */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div className="flex items-center space-x-2">
             <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400">
               <TrendingUp className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
               Kurva S (S-Curve) Progres Proyek
             </h2>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Perbandingan Rencana Kumulatif vs Realisasi Aktual sepanjang 24 Minggu pelaksanaan
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Perbandingan Rencana Kumulatif vs Realisasi Aktual sepanjang 24 Minggu
           </p>
         </div>
 
         {/* Controls & Metrics Pills */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Quick Cutoff stats */}
-          <div className="hidden md:flex items-center px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs border border-slate-200/80 dark:border-slate-700/80">
-            <span className="text-slate-500 dark:text-slate-400 mr-2">Posisi W{cutoffWeek}:</span>
-            <span className="font-bold text-slate-700 dark:text-slate-200 font-sans tabular-nums mr-2">
-              Plan {plannedCutoff}% | Act {actualCutoff}%
+          <div className="flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 text-[11px] sm:text-xs border border-slate-200/80 dark:border-slate-700/80">
+            <span className="text-slate-500 dark:text-slate-400 mr-1.5 sm:mr-2">W{cutoffWeek}:</span>
+            <span className="font-bold text-slate-700 dark:text-slate-200 font-sans tabular-nums mr-1.5 sm:mr-2">
+              P {plannedCutoff}% | A {actualCutoff}%
             </span>
             <span className={`px-1.5 py-0.5 rounded font-bold text-[10px] font-sans tabular-nums ${
               variance >= 0 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
@@ -148,34 +148,34 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ data, cutoffWeek }) =>
           <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-0.5 border border-slate-200 dark:border-slate-700 text-xs">
             <button
               onClick={() => setChartMode('cumulative')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-2.5 sm:px-3 py-1 rounded-lg font-semibold text-[11px] sm:text-xs transition-all ${
                 chartMode === 'cumulative'
                   ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
               }`}
             >
-              Kurva Kumulatif
+              Kumulatif
             </button>
             <button
               onClick={() => setChartMode('weekly')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+              className={`px-2.5 sm:px-3 py-1 rounded-lg font-semibold text-[11px] sm:text-xs transition-all ${
                 chartMode === 'weekly'
                   ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
               }`}
             >
-              Progres Mingguan
+              Mingguan
             </button>
           </div>
         </div>
       </div>
 
       {/* Chart Canvas */}
-      <div className="h-72 sm:h-80 w-full">
+      <div className="h-64 sm:h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={formattedData}
-            margin={{ top: 10, right: 20, left: -10, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: -22, bottom: 0 }}
           >
             <defs>
               <linearGradient id="plannedGradient" x1="0" y1="0" x2="0" y2="1">
@@ -193,15 +193,15 @@ export const SCurveChart: React.FC<SCurveChartProps> = ({ data, cutoffWeek }) =>
             <XAxis
               dataKey="label"
               stroke="#64748b"
-              fontSize={11}
+              fontSize={10}
               tickLine={false}
               axisLine={{ stroke: '#cbd5e1', strokeWidth: 1 }}
-              interval={1}
+              minTickGap={10}
             />
 
             <YAxis
               stroke="#64748b"
-              fontSize={11}
+              fontSize={10}
               tickLine={false}
               axisLine={false}
               unit="%"

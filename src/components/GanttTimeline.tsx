@@ -37,25 +37,31 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
   ];
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-200 dark:border-slate-800 transition-all animate-fade-in-up">
+    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3.5 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-800 transition-all animate-fade-in-up">
       {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div className="flex items-center space-x-2">
             <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400">
               <Calendar className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
               Gantt Chart Timeline (24 Minggu)
             </h2>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Peta jadwal pelaksanaan dan milestone proyek per minggu (Garis kuning: Cut-off W{cutoffWeek})
+          <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Peta jadwal pelaksanaan per minggu (Garis kuning: Cut-off W{cutoffWeek})
           </p>
         </div>
 
         {/* Filters & Legend */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Mobile Swipe Hint */}
+          <div className="sm:hidden w-full flex items-center justify-between text-[10px] text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 rounded-lg border border-sky-100 dark:border-sky-900/60">
+            <span>Geser jadwal ke kanan ➔</span>
+            <span>24 Minggu</span>
+          </div>
+
           {/* Phase Filter Dropdown */}
           <select
             value={phaseFilter}
@@ -110,7 +116,7 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
           {/* Header Rows */}
           {/* 1. Month Header */}
           <div className="grid grid-cols-[300px_repeat(24,minmax(28px,1fr))] bg-slate-100 dark:bg-slate-800/80 text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-            <div className="p-2.5 pl-3 border-r border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <div className="p-2.5 pl-3 border-r border-slate-200 dark:border-slate-700 flex items-center justify-between sticky left-0 bg-slate-100 dark:bg-slate-800 z-20 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
               <span>Item Pekerjaan &amp; Fase</span>
               <span className="text-[10px] text-slate-400 font-normal mr-2">Tgt / Cap</span>
             </div>
@@ -130,7 +136,7 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
 
           {/* 2. Week Number Header */}
           <div className="grid grid-cols-[300px_repeat(24,minmax(28px,1fr))] bg-slate-50 dark:bg-slate-850 text-[11px] font-sans font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700">
-            <div className="p-2 pl-3 border-r border-slate-200 dark:border-slate-700 text-[10px] uppercase font-sans text-slate-400">
+            <div className="p-2 pl-3 border-r border-slate-200 dark:border-slate-700 text-[10px] uppercase font-sans text-slate-400 sticky left-0 bg-slate-50 dark:bg-slate-850 z-20 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
               {filteredTasks.length} Pekerjaan Terdaftar
             </div>
             {Array.from({ length: totalWeeks }, (_, i) => i + 1).map((w) => {
@@ -162,7 +168,7 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
                   className="grid grid-cols-[300px_repeat(24,minmax(28px,1fr))] hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group"
                 >
                   {/* Task Info Column */}
-                  <div className="p-2.5 pl-3 border-r border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 overflow-hidden">
+                  <div className="p-2.5 pl-3 border-r border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 overflow-hidden sticky left-0 bg-white dark:bg-slate-900 z-10 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)] group-hover:bg-slate-50 dark:group-hover:bg-slate-800/80 transition-colors">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center space-x-1.5">
                         <span className="text-[10px] font-sans font-bold text-slate-400 tabular-nums">

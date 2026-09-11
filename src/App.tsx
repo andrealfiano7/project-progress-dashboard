@@ -181,15 +181,15 @@ export const App: React.FC = () => {
       />
 
       {/* Main Dashboard Workspace */}
-      <main className="no-print flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className="no-print flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* KPI Cards (Always visible as executive anchors) */}
         <KPICards stats={stats} onFilterStatus={handleFilterByKPI} />
 
         {/* Tab 1: Executive Overview */}
         {activeTab === 'overview' && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-4 sm:space-y-6 animate-fadeIn">
             {/* Visual Charts Grid: SCurve & Donut */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="lg:col-span-2">
                 <SCurveChart data={sCurveData} cutoffWeek={cutoffWeek} />
               </div>
@@ -221,7 +221,7 @@ export const App: React.FC = () => {
 
         {/* Tab 2: Gantt Timeline */}
         {activeTab === 'gantt' && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-4 sm:space-y-6 animate-fadeIn">
             <GanttTimeline
               tasks={tasks}
               cutoffWeek={cutoffWeek}
@@ -232,7 +232,7 @@ export const App: React.FC = () => {
 
         {/* Tab 3: Detailed Task Table */}
         {activeTab === 'table' && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-4 sm:space-y-6 animate-fadeIn">
             <TaskTable
               tasks={tasks}
               onSelectTask={setSelectedTask}
@@ -248,9 +248,9 @@ export const App: React.FC = () => {
 
         {/* Tab 4: SCurve & Analytics Deep-dive */}
         {activeTab === 'analytics' && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-4 sm:space-y-6 animate-fadeIn">
             <SCurveChart data={sCurveData} cutoffWeek={cutoffWeek} />
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               <div className="lg:col-span-1">
                 <StatusDonutChart stats={stats} onFilterStatus={handleFilterByKPI} />
               </div>

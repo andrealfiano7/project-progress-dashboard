@@ -216,11 +216,11 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
               Jadwal Minggu Pelaksanaan (Pilih minggu aktif)
             </label>
-            <div className="grid grid-cols-6 gap-2 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700">
               {Array.from({ length: 6 }, (_, mIdx) => {
                 const monthWeeks = [mIdx * 4 + 1, mIdx * 4 + 2, mIdx * 4 + 3, mIdx * 4 + 4];
                 return (
-                  <div key={mIdx} className="space-y-1.5">
+                  <div key={mIdx} className="space-y-1.5 bg-white/60 dark:bg-slate-800/60 p-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
                     <span className="text-[10px] font-bold text-slate-400 block text-center">
                       Bulan {mIdx + 1}
                     </span>
@@ -232,10 +232,10 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
                             type="button"
                             key={w}
                             onClick={() => toggleWeek(w)}
-                            className={`p-1 text-[10px] font-semibold rounded text-center transition-all ${
+                            className={`p-1.5 sm:p-1 text-[11px] sm:text-[10px] font-semibold rounded text-center transition-all ${
                               isSelected
                                 ? 'bg-sky-600 text-white shadow-sm'
-                                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-sky-400'
+                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:border-sky-400'
                             }`}
                           >
                             W{w}

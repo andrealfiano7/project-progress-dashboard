@@ -14,18 +14,18 @@ export const PhaseSummaryCard: React.FC<PhaseSummaryCardProps> = ({
   selectedPhase,
 }) => {
   return (
-    <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 shadow-sm border border-slate-200 dark:border-slate-800 transition-all animate-fade-in-up">
-      <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100 dark:border-slate-800">
+    <div className="rounded-2xl bg-white dark:bg-slate-900 p-3.5 sm:p-5 shadow-sm border border-slate-200 dark:border-slate-800 transition-all animate-fade-in-up">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center space-x-2">
-          <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400">
+          <div className="p-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 shrink-0">
             <FolderGit2 className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
               Target &amp; Capaian per Fase Proyek
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Perbandingan akumulasi Target vs Realisasi Capaian pada setiap tahapan (sesuai formulasi Excel)
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+              Perbandingan akumulasi Target vs Realisasi Capaian pada setiap tahapan
             </p>
           </div>
         </div>
@@ -33,14 +33,14 @@ export const PhaseSummaryCard: React.FC<PhaseSummaryCardProps> = ({
         {selectedPhase && (
           <button
             onClick={() => onSelectPhase && onSelectPhase('')}
-            className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold"
+            className="text-xs text-sky-600 dark:text-sky-400 hover:underline font-semibold self-start sm:self-auto"
           >
             Reset Filter Fase
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {summaries.map((s, idx) => {
           const isCompleted = s.progressPercentage >= 100;
           const hasOverdue = s.overdueTasks > 0;
