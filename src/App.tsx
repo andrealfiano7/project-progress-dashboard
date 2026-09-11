@@ -456,6 +456,18 @@ export const App: React.FC = () => {
         )}
       </main>
 
+      {/* Footer Dashboard */}
+      <footer className="relative z-10 no-print border-t border-slate-200/80 dark:border-slate-800/80 mt-8 py-5 text-center text-xs text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm transition-colors">
+        <div className="max-w-[1760px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="font-medium">
+            &copy; {new Date().getFullYear()} <span className="font-bold text-slate-700 dark:text-slate-200">Evagenesis Consulting</span>. Seluruh hak cipta dilindungi.
+          </p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">
+            {metadata.title} &bull; {metadata.institution} &bull; Pelaksana: {metadata.contractor}
+          </p>
+        </div>
+      </footer>
+
       {/* Printable Executive Report (Visible only during print) */}
       <PrintReportView
         metadata={metadata}

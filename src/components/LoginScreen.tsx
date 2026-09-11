@@ -266,9 +266,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="w-full max-w-[1760px] mx-auto text-center text-slate-400 text-xs py-2">
-        <p>
-          &copy; {new Date().getFullYear()} {metadata.institution || 'PT Angkasa Pura Indonesia'}. Dikelola bersama {metadata.contractor || 'Centrois Consulting'}.
+      <div className="w-full max-w-[1760px] mx-auto text-center text-slate-400 dark:text-slate-500 text-xs py-4 space-y-1">
+        <p className="font-medium">
+          &copy; {new Date().getFullYear()} <span className="font-bold text-slate-600 dark:text-slate-300">Evagenesis Consulting</span>. Seluruh hak cipta dilindungi.
+        </p>
+        <p className="text-[11px] text-slate-400/80 dark:text-slate-500/80">
+          {metadata.title || 'Timeline Implementasi BCM'} &bull; {metadata.institution || 'PT Angkasa Pura Indonesia'}
         </p>
       </div>
     </div>

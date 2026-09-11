@@ -115,6 +115,11 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
           </p>
         </div>
       </div>
+
+      {/* Footer Copyright */}
+      <div className="text-center text-[10px] text-slate-400 mt-10 pt-4 border-t border-slate-200">
+        &copy; {new Date().getFullYear()} Evagenesis Consulting &bull; Dokumen Pelaporan Progres {metadata.title} ({metadata.institution})
+      </div>
     </div>
   );
 };
