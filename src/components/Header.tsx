@@ -12,9 +12,12 @@ import {
   RotateCcw,
   Layers,
   Settings,
-  Database
+  Database,
+  LogOut
 } from 'lucide-react';
 import { ProjectMetadata } from '../types/timeline';
+import { AuthUser } from '../types/auth';
+import { LiveClock } from './LiveClock';
 
 interface HeaderProps {
   metadata: ProjectMetadata;
@@ -31,6 +34,8 @@ interface HeaderProps {
   setDarkMode: (val: boolean) => void;
   cutoffWeek: number;
   setCutoffWeek: (week: number) => void;
+  user?: AuthUser | null;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,6 +53,8 @@ export const Header: React.FC<HeaderProps> = ({
   setDarkMode,
   cutoffWeek,
   setCutoffWeek,
+  user,
+  onLogout,
 }) => {
   const currentMonth = Math.ceil(cutoffWeek / 4);
   const weekInMonth = ((cutoffWeek - 1) % 4) + 1;
@@ -88,6 +95,11 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                   <span className="tracking-wide font-bold">{metadata.badgeText || 'Live Sync'}</span>
                 </span>
+
+                {/* Live Realtime Clock Hari Ini */}
+                <div className="hidden sm:block">
+                  <LiveClock />
+                </div>
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 Institusi: <span className="font-semibold text-slate-700 dark:text-slate-200">{metadata.institution}</span>
@@ -191,6 +203,44 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {darkMode ? <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             </button>
+
+            {/* User Profile & Logout */}
+            {user && (
+              <div className="flex items-center space-x-1 sm:space-x-1.5 pl-1 sm:pl-2 border-l border-slate-200 dark:border-slate-800">
+                <div 
+                  className="flex items-center space-x-2 p-1 px-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80"
+                  title={`Pengguna Aktif: ${user.name} (${user.role.toUpperCase()})`}
+                >
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[11px] ${
+                    user.role === 'admin' 
+                      ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-400/30' 
+                      : user.role === 'manager'
+                      ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-400/30'
+                      : 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-400/30'
+                  }`}>
+                    {user.name.charAt(0)}
+                  </div>
+                  <div className="hidden xl:block text-left">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight truncate max-w-[120px]">
+                      {user.name}
+                    </span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 block leading-tight capitalize">
+                      {user.role === 'admin' ? 'Administrator' : user.role === 'manager' ? 'Project Manager' : 'Viewer'}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={onLogout}
+                  className="p-1.5 sm:p-2 sm:px-2.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80 transition-all shadow-sm active:scale-95 flex items-center"
+                  title="Keluar / Logout dari aplikasi"
+                  aria-label="Logout"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline ml-1 font-medium">Keluar</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

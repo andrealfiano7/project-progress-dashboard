@@ -22,6 +22,9 @@ import { SettingsModal } from './components/SettingsModal';
 import { DatabaseModal } from './components/DatabaseModal';
 import { PrintReportView } from './components/PrintReportView';
 import { NextAnimatedBackground } from './components/NextAnimatedBackground';
+import { LoginScreen } from './components/LoginScreen';
+import { authService } from './services/authService';
+import { AuthUser } from './types/auth';
 import {
   fetchTasksFromApi,
   fetchMetadataFromApi,
@@ -89,6 +92,9 @@ export const App: React.FC = () => {
     const saved = localStorage.getItem('theme_dark_mode');
     return saved ? saved === 'true' : false;
   });
+
+  // Auth state: membaca sesi aktif dari localStorage
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => authService.getCurrentUser());
 
   useEffect(() => {
     localStorage.setItem('theme_dark_mode', String(darkMode));
@@ -167,7 +173,14 @@ export const App: React.FC = () => {
   const existingPhases = Array.from(new Set(tasks.map((t) => t.phase)));
 
   // Handlers
+  const isViewer = currentUser?.role === 'viewer';
+
   const handleUpdateStatus = (taskId: number, newStatus: TaskStatus, newCapaian?: number) => {
+    if (isViewer) {
+      alert('Akun Viewer hanya memiliki hak akses pantau (read-only). Silakan masuk sebagai Administrator atau Project Manager untuk memperbarui status.');
+      return;
+    }
+
     let updatedTask: TimelineTask | null = null;
     setTasks((prev) =>
       prev.map((t) => {
@@ -189,6 +202,11 @@ export const App: React.FC = () => {
   };
 
   const handleSaveTask = (taskToSave: TimelineTask) => {
+    if (isViewer) {
+      alert('Akun Viewer tidak memiliki izin menyimpan perubahan pekerjaan.');
+      return;
+    }
+
     setTasks((prev) => {
       const exists = prev.some((t) => t.id === taskToSave.id);
       if (exists) {
@@ -202,6 +220,11 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTask = (taskId: number) => {
+    if (isViewer) {
+      alert('Akun Viewer tidak memiliki izin menghapus item pekerjaan.');
+      return;
+    }
+
     if (window.confirm(`Apakah Anda yakin ingin menghapus item pekerjaan #${taskId}?`)) {
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
       deleteTaskFromApi(taskId);
@@ -209,11 +232,19 @@ export const App: React.FC = () => {
   };
 
   const handleOpenEdit = (task: TimelineTask) => {
+    if (isViewer) {
+      setSelectedTask(task);
+      return;
+    }
     setEditingTask(task);
     setIsEditModalOpen(true);
   };
 
   const handleOpenAdd = () => {
+    if (isViewer) {
+      alert('Akun Viewer tidak memiliki izin menambah pekerjaan baru.');
+      return;
+    }
     setEditingTask(null);
     setIsEditModalOpen(true);
   };
@@ -275,27 +306,68 @@ export const App: React.FC = () => {
     }
   };
 
+  // Jika belum login, tampilkan LoginScreen berlatar NextAnimatedBackground
+  if (!currentUser) {
+    return (
+      <div className="relative min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300 isolate">
+        {/* Anime.js Next.js Ambient Grid & Beam Background */}
+        <NextAnimatedBackground darkMode={darkMode} />
+
+        {/* Gerbang Autentikasi / Layar Login */}
+        <LoginScreen
+          onLoginSuccess={(user) => setCurrentUser(user)}
+          metadata={metadata}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300 isolate">
       {/* Anime.js Next.js Ambient Grid & Beam Background (strictly in deep background plane) */}
       <NextAnimatedBackground darkMode={darkMode} />
 
-      {/* Header */}
+      {/* Header dengan User Profile, Logout & Live Clock */}
       <Header
         metadata={metadata}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onOpenUpload={() => setIsUploadOpen(true)}
+        onOpenUpload={() => {
+          if (isViewer) {
+            alert('Akun Viewer tidak memiliki izin mengimpor file Excel.');
+            return;
+          }
+          setIsUploadOpen(true);
+        }}
         onExportExcel={() => exportTasksToExcel(tasks, metadata)}
         onPrint={() => window.print()}
-        onResetData={handleResetData}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onResetData={() => {
+          if (isViewer) {
+            alert('Akun Viewer tidak memiliki izin mereset data proyek.');
+            return;
+          }
+          handleResetData();
+        }}
+        onOpenSettings={() => {
+          if (isViewer) {
+            alert('Akun Viewer tidak memiliki izin mengubah pengaturan identitas proyek.');
+            return;
+          }
+          setIsSettingsOpen(true);
+        }}
         onOpenDatabase={() => setIsDatabaseModalOpen(true)}
         isDatabaseActive={isDatabaseConnected}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         cutoffWeek={cutoffWeek}
         setCutoffWeek={handleCutoffWeekChange}
+        user={currentUser}
+        onLogout={() => {
+          authService.logout();
+          setCurrentUser(null);
+        }}
       />
 
       {/* Main Dashboard Workspace (elevated above background) */}
