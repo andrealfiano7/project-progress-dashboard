@@ -1,4 +1,4 @@
-﻿# Logs
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -24,3 +24,4 @@ dist-ssr
 New folder/
 parsed_tasks.json
 .vercel
+screenshot1.png

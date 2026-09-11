@@ -11,7 +11,8 @@ import {
   FileText, 
   Activity, 
   Calendar,
-  Layers
+  Layers,
+  Database
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -20,6 +21,7 @@ interface SettingsModalProps {
   metadata: ProjectMetadata;
   onSave: (newMetadata: ProjectMetadata) => void;
   onResetToDefault: () => void;
+  onOpenSupabase?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -28,6 +30,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   metadata,
   onSave,
   onResetToDefault,
+  onOpenSupabase,
 }) => {
   const [formData, setFormData] = useState<ProjectMetadata>(metadata);
   const [isSaved, setIsSaved] = useState(false);
@@ -109,11 +112,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Modal Body / Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[75vh] overflow-y-auto">
-          {/* Quick Presets */}
+          {/* Quick Presets & Database Connection Quick Link */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Template Cepat:
-            </label>
+            <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+              <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Template Cepat:
+              </label>
+              {onOpenSupabase && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenSupabase();
+                  }}
+                  className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center space-x-1"
+                >
+                  <Database className="w-3.5 h-3.5" />
+                  <span>Kelola Database Supabase ➔</span>
+                </button>
+              )}
+            </div>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <button
                 type="button"

@@ -11,7 +11,8 @@ import {
   Moon, 
   RotateCcw,
   Layers,
-  Settings
+  Settings,
+  Database
 } from 'lucide-react';
 import { ProjectMetadata } from '../types/timeline';
 
@@ -24,6 +25,8 @@ interface HeaderProps {
   onPrint: () => void;
   onResetData: () => void;
   onOpenSettings: () => void;
+  onOpenSupabase: () => void;
+  isSupabaseActive: boolean;
   darkMode: boolean;
   setDarkMode: (val: boolean) => void;
   cutoffWeek: number;
@@ -39,6 +42,8 @@ export const Header: React.FC<HeaderProps> = ({
   onPrint,
   onResetData,
   onOpenSettings,
+  onOpenSupabase,
+  isSupabaseActive,
   darkMode,
   setDarkMode,
   cutoffWeek,
@@ -91,7 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Right Actions: Cutoff Selector, Upload, Export, Print, Settings, Theme */}
+          {/* Right Actions: Cutoff Selector, Supabase, Settings, Upload, Export, Print, Theme */}
           <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
             {/* Cut-off Week selector (Visible on all screens) */}
             <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 px-2 sm:px-2.5 border border-slate-200/80 dark:border-slate-700/80 text-xs">
@@ -109,6 +114,24 @@ export const Header: React.FC<HeaderProps> = ({
                 ))}
               </select>
             </div>
+
+            {/* Supabase Cloud Connection Status Button */}
+            <button
+              onClick={onOpenSupabase}
+              className={`inline-flex items-center p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold transition-all shadow-sm active:scale-95 ${
+                isSupabaseActive
+                  ? 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-emerald-500/10'
+                  : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+              }`}
+              title={isSupabaseActive ? 'Database Supabase Terhubung (Realtime)' : 'Hubungkan Database Supabase (Klik untuk Pengaturan)'}
+              aria-label="Pengaturan Database Supabase"
+            >
+              <Database className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isSupabaseActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`} />
+              <span className="hidden lg:inline ml-1.5 font-bold">
+                {isSupabaseActive ? 'Supabase DB' : 'Koneksi DB'}
+              </span>
+              <span className={`w-2 h-2 rounded-full ml-1.5 ${isSupabaseActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+            </button>
 
             {/* Settings Button */}
             <button
