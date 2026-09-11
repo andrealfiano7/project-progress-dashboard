@@ -31,6 +31,8 @@ import {
   checkDatabaseHealth,
 } from './services/apiService';
 
+const DEFAULT_CUTOFF_WEEK = DEFAULT_METADATA.cutoffWeek || 13;
+
 export const App: React.FC = () => {
   // Persistence state
   const [tasks, setTasks] = useState<TimelineTask[]>(() => {
@@ -57,9 +59,16 @@ export const App: React.FC = () => {
     return DEFAULT_METADATA;
   });
 
+  // Cut-off Week state: default W13, and remembers user's last selection on refresh
   const [cutoffWeek, setCutoffWeek] = useState<number>(() => {
     const saved = localStorage.getItem('project_dashboard_cutoff');
-    return saved ? Number(saved) : 13;
+    if (saved) {
+      const parsed = Number(saved);
+      if (!isNaN(parsed) && parsed >= 1 && parsed <= 24) {
+        return parsed;
+      }
+    }
+    return DEFAULT_CUTOFF_WEEK;
   });
 
   // UI state
@@ -117,11 +126,23 @@ export const App: React.FC = () => {
       }
     });
 
-    // 3. Fetch Metadata from Neon DB
+    // 3. Fetch Metadata from Neon DB (Preserving user's last chosen cutoffWeek)
     fetchMetadataFromApi().then((dbMeta) => {
       if (dbMeta) {
-        setMetadata(dbMeta);
-        setCutoffWeek(dbMeta.cutoffWeek);
+        const savedCutoff = localStorage.getItem('project_dashboard_cutoff');
+        if (savedCutoff) {
+          const parsed = Number(savedCutoff);
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= 24) {
+            setCutoffWeek(parsed);
+            setMetadata({ ...dbMeta, cutoffWeek: parsed });
+            return;
+          }
+        }
+        // Jika belum ada pilihan terakhir di localStorage, gunakan default W13
+        const defaultCutoff = dbMeta.cutoffWeek || DEFAULT_CUTOFF_WEEK;
+        setCutoffWeek(defaultCutoff);
+        setMetadata({ ...dbMeta, cutoffWeek: defaultCutoff });
+        localStorage.setItem('project_dashboard_cutoff', String(defaultCutoff));
       }
     });
 
@@ -206,16 +227,27 @@ export const App: React.FC = () => {
     setActiveTab('table');
   };
 
+  const handleCutoffWeekChange = (newWeek: number) => {
+    setCutoffWeek(newWeek);
+    localStorage.setItem('project_dashboard_cutoff', String(newWeek));
+    setMetadata((prev) => {
+      const updated = { ...prev, cutoffWeek: newWeek };
+      localStorage.setItem('project_dashboard_metadata', JSON.stringify(updated));
+      updateMetadataToApi(updated);
+      return updated;
+    });
+  };
+
   const handleResetData = () => {
     if (window.confirm('Reset data dashboard ke versi default dari Timeline Rev001.xlsx?')) {
       setTasks(DEFAULT_TASKS);
       setMetadata(DEFAULT_METADATA);
-      setCutoffWeek(13);
+      setCutoffWeek(DEFAULT_CUTOFF_WEEK);
+      localStorage.setItem('project_dashboard_cutoff', String(DEFAULT_CUTOFF_WEEK));
       localStorage.removeItem('project_dashboard_tasks');
       localStorage.removeItem('project_dashboard_metadata');
-      localStorage.removeItem('project_dashboard_cutoff');
 
-      updateMetadataToApi(DEFAULT_METADATA);
+      updateMetadataToApi({ ...DEFAULT_METADATA, cutoffWeek: DEFAULT_CUTOFF_WEEK });
       syncAllTasksToApi(DEFAULT_TASKS);
     }
   };
@@ -236,7 +268,9 @@ export const App: React.FC = () => {
   const handleResetMetadata = () => {
     if (window.confirm('Kembalikan judul proyek dan identitas dashboard ke versi default?')) {
       setMetadata(DEFAULT_METADATA);
-      updateMetadataToApi(DEFAULT_METADATA);
+      setCutoffWeek(DEFAULT_CUTOFF_WEEK);
+      localStorage.setItem('project_dashboard_cutoff', String(DEFAULT_CUTOFF_WEEK));
+      updateMetadataToApi({ ...DEFAULT_METADATA, cutoffWeek: DEFAULT_CUTOFF_WEEK });
     }
   };
 
@@ -257,7 +291,7 @@ export const App: React.FC = () => {
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         cutoffWeek={cutoffWeek}
-        setCutoffWeek={setCutoffWeek}
+        setCutoffWeek={handleCutoffWeekChange}
       />
 
       {/* Main Dashboard Workspace */}

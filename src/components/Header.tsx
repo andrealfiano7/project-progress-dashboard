@@ -109,7 +109,7 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 {Array.from({ length: 24 }, (_, i) => i + 1).map((w) => (
                   <option key={w} value={w} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-                    W{w} (M{Math.ceil(w / 4)})
+                    W{w} (M{Math.ceil(w / 4)}){w === 13 ? ' • Default' : ''}
                   </option>
                 ))}
               </select>
