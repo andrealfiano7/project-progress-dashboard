@@ -7,6 +7,7 @@ export const DEFAULT_METADATA: ProjectMetadata = {
   totalWeeks: 24,
   cutoffWeek: 13, // Bulan ke-4, Minggu 1 (W13)
   lastUpdated: 'September 2026',
+  badgeText: 'Live Sync',
 };
 
 export const DEFAULT_TASKS: TimelineTask[] = [

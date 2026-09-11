@@ -33,6 +33,7 @@ export interface ProjectMetadata {
   totalWeeks: number;
   cutoffWeek: number; // Current week line, e.g. 13
   lastUpdated: string;
+  badgeText?: string; // e.g. 'Live Sync' or 'Live Realtime'
 }
 
 export interface WeeklySCurvePoint {

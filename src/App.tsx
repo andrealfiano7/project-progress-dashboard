@@ -18,6 +18,7 @@ import { TaskTable } from './components/TaskTable';
 import { TaskDetailModal } from './components/TaskDetailModal';
 import { EditTaskModal } from './components/EditTaskModal';
 import { ExcelUploadModal } from './components/ExcelUploadModal';
+import { SettingsModal } from './components/SettingsModal';
 import { PrintReportView } from './components/PrintReportView';
 
 export const App: React.FC = () => {
@@ -57,6 +58,7 @@ export const App: React.FC = () => {
   const [editingTask, setEditingTask] = useState<TimelineTask | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [tableStatusFilter, setTableStatusFilter] = useState<string>('All');
   const [tablePhaseFilter, setTablePhaseFilter] = useState<string>('');
 
@@ -163,6 +165,16 @@ export const App: React.FC = () => {
     setTasks(result.tasks);
   };
 
+  const handleSaveMetadata = (newMetadata: ProjectMetadata) => {
+    setMetadata(newMetadata);
+  };
+
+  const handleResetMetadata = () => {
+    if (window.confirm('Kembalikan judul proyek dan identitas dashboard ke versi default?')) {
+      setMetadata(DEFAULT_METADATA);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* Header */}
@@ -174,6 +186,7 @@ export const App: React.FC = () => {
         onExportExcel={() => exportTasksToExcel(tasks, metadata)}
         onPrint={() => window.print()}
         onResetData={handleResetData}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         cutoffWeek={cutoffWeek}
@@ -293,6 +306,14 @@ export const App: React.FC = () => {
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
         onConfirmData={handleConfirmExcelData}
+      />
+
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        metadata={metadata}
+        onSave={handleSaveMetadata}
+        onResetToDefault={handleResetMetadata}
       />
     </div>
   );
