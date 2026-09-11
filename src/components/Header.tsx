@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {/* Live Sync Animated Badge with Radar Pulse */}
                 <span 
                   onClick={onOpenSettings}
-                  className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)] shrink-0 select-none cursor-pointer hover:bg-emerald-500/20 transition-all"
+                  className="inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)] shrink-0 select-none cursor-pointer hover:bg-emerald-500/20 transition-all whitespace-nowrap"
                   title="Live Realtime Sync Aktif • Klik untuk mengatur"
                 >
                   <span className="relative flex h-2 w-2 mr-1.5">
@@ -95,11 +95,6 @@ export const Header: React.FC<HeaderProps> = ({
                   </span>
                   <span className="tracking-wide font-bold">{metadata.badgeText || 'Live Sync'}</span>
                 </span>
-
-                {/* Live Realtime Clock Hari Ini */}
-                <div className="hidden sm:block">
-                  <LiveClock />
-                </div>
               </div>
               <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 Institusi: <span className="font-semibold text-slate-700 dark:text-slate-200">{metadata.institution}</span>
@@ -130,7 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Neon DB & Prisma ORM Connection Status Button */}
             <button
               onClick={onOpenDatabase}
-              className={`inline-flex items-center p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold transition-all shadow-sm active:scale-95 ${
+              className={`inline-flex items-center p-2 sm:px-2.5 sm:py-2 rounded-xl text-xs font-semibold transition-all shadow-sm active:scale-95 shrink-0 ${
                 isDatabaseActive
                   ? 'bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-emerald-500/10'
                   : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
@@ -139,57 +134,56 @@ export const Header: React.FC<HeaderProps> = ({
               aria-label="Pengaturan Database Neon & Prisma"
             >
               <Database className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isDatabaseActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`} />
-              <span className="hidden lg:inline ml-1.5 font-bold">
+              <span className="hidden xl:inline ml-1.5 font-bold">
                 {isDatabaseActive ? 'Neon DB' : 'Koneksi DB'}
               </span>
-              <span className={`w-2 h-2 rounded-full ml-1.5 ${isDatabaseActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+              <span className={`w-2 h-2 rounded-full ml-1 sm:ml-1.5 ${isDatabaseActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
             </button>
 
             {/* Settings Button */}
             <button
               onClick={onOpenSettings}
-              className="inline-flex items-center p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center p-2 sm:px-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 transition-all shadow-sm active:scale-95 shrink-0"
               title="Pengaturan Judul & Identitas Dashboard"
               aria-label="Buka Pengaturan"
             >
               <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600 dark:text-sky-400" />
-              <span className="hidden lg:inline ml-1.5">Pengaturan</span>
+              <span className="hidden 2xl:inline ml-1.5">Pengaturan</span>
             </button>
 
             {/* Upload Excel Button */}
             <button
               onClick={onOpenUpload}
-              className="inline-flex items-center p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center p-2 sm:px-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm active:scale-95 shrink-0"
               title="Unggah / Import File Excel (.xlsx / .xls)"
             >
               <Upload className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
-              <span className="hidden md:inline ml-1.5">Import Excel</span>
+              <span className="hidden 2xl:inline ml-1.5">Import Excel</span>
             </button>
 
             {/* Export Excel Button */}
             <button
               onClick={onExportExcel}
-              className="inline-flex items-center p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center p-2 sm:px-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 transition-all shadow-sm active:scale-95 shrink-0"
               title="Unduh data progres saat ini ke file Excel terformat"
             >
               <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span className="hidden md:inline ml-1.5">Export Excel</span>
+              <span className="hidden 2xl:inline ml-1.5">Export Excel</span>
             </button>
 
             {/* Print Report Button */}
             <button
               onClick={onPrint}
-              className="inline-flex items-center p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm active:scale-95"
+              className="inline-flex items-center p-2 sm:px-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 transition-all shadow-sm active:scale-95 shrink-0"
               title="Cetak Laporan / Simpan PDF"
             >
               <Printer className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-              <span className="hidden md:inline ml-1.5">Cetak</span>
             </button>
 
             {/* Reset Data Button */}
             <button
               onClick={onResetData}
-              className="p-1.5 sm:p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-all"
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-all shrink-0"
               title="Reset ke Data Bawaan (Timeline Rev001.xlsx)"
             >
               <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -198,7 +192,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Dark Mode Toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="p-1.5 sm:p-2 rounded-xl text-slate-500 hover:text-amber-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-amber-300 dark:hover:bg-slate-800 transition-all"
+              className="p-2 rounded-xl text-slate-500 hover:text-amber-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-amber-300 dark:hover:bg-slate-800 transition-all shrink-0"
               title={darkMode ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
             >
               {darkMode ? <Sun className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Moon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
@@ -206,12 +200,12 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* User Profile & Logout */}
             {user && (
-              <div className="flex items-center space-x-1 sm:space-x-1.5 pl-1 sm:pl-2 border-l border-slate-200 dark:border-slate-800">
+              <div className="flex items-center space-x-1 sm:space-x-1.5 pl-1.5 sm:pl-2 border-l border-slate-200 dark:border-slate-800 shrink-0">
                 <div 
-                  className="flex items-center space-x-2 p-1 px-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80"
+                  className="flex items-center space-x-1.5 p-1 px-2 rounded-xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80"
                   title={`Pengguna Aktif: ${user.name} (${user.role.toUpperCase()})`}
                 >
-                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[11px] ${
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[11px] shrink-0 ${
                     user.role === 'admin' 
                       ? 'bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-400/30' 
                       : user.role === 'manager'
@@ -220,19 +214,19 @@ export const Header: React.FC<HeaderProps> = ({
                   }`}>
                     {user.name.charAt(0)}
                   </div>
-                  <div className="hidden xl:block text-left">
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight truncate max-w-[120px]">
+                  <div className="hidden xl:block text-left whitespace-nowrap">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-100 block leading-tight truncate max-w-[100px]">
                       {user.name}
                     </span>
                     <span className="text-[10px] text-slate-500 dark:text-slate-400 block leading-tight capitalize">
-                      {user.role === 'admin' ? 'Administrator' : user.role === 'manager' ? 'Project Manager' : 'Viewer'}
+                      {user.role === 'admin' ? 'Administrator' : user.role === 'manager' ? 'PM' : 'Viewer'}
                     </span>
                   </div>
                 </div>
 
                 <button
                   onClick={onLogout}
-                  className="p-1.5 sm:p-2 sm:px-2.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80 transition-all shadow-sm active:scale-95 flex items-center"
+                  className="p-1.5 sm:p-2 sm:px-2.5 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/80 transition-all shadow-sm active:scale-95 flex items-center shrink-0"
                   title="Keluar / Logout dari aplikasi"
                   aria-label="Logout"
                 >
@@ -294,12 +288,20 @@ export const Header: React.FC<HeaderProps> = ({
             Analisis Kurva S
           </button>
 
-          {/* Quick status pill on tab bar */}
-          <div className="hidden lg:flex items-center ml-auto pl-4 text-xs text-slate-500 dark:text-slate-400">
-            <span>Posisi Proyek:</span>
-            <span className="ml-1.5 px-2 py-0.5 rounded-md font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
-              Bulan {currentMonth}, Minggu {weekInMonth} (W{cutoffWeek})
-            </span>
+          {/* Telemetri Status Tab Bar: Jam Real-time Hari Ini & Posisi Proyek */}
+          <div className="hidden md:flex items-center ml-auto pl-4 space-x-2 text-xs shrink-0">
+            <LiveClock />
+            <div className="flex items-center px-2.5 py-1 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/80 text-amber-800 dark:text-amber-300 whitespace-nowrap">
+              <span className="font-medium mr-1 text-slate-500 dark:text-slate-400">Posisi:</span>
+              <span className="font-bold font-sans tabular-nums">
+                Bulan {currentMonth}, M{weekInMonth} (W{cutoffWeek})
+              </span>
+            </div>
+          </div>
+
+          {/* Mobile Live Clock pada ujung scroll tab */}
+          <div className="md:hidden shrink-0 ml-2 py-0.5">
+            <LiveClock showIcon={false} />
           </div>
         </div>
       </div>

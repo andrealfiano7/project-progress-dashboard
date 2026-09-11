@@ -36,11 +36,11 @@ export const LiveClock: React.FC<LiveClockProps> = ({ className = '', showIcon =
 
   return (
     <div
-      className={`inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-medium bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-sm transition-all select-none ${className}`}
+      className={`inline-flex items-center px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-medium bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-sm backdrop-blur-sm transition-all select-none whitespace-nowrap shrink-0 ${className}`}
       title="Waktu Real-time Hari Ini (Tersinkronisasi Setiap Detik)"
     >
       {showIcon && (
-        <div className="flex items-center mr-2">
+        <div className="flex items-center mr-2 shrink-0">
           <Clock className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 mr-1.5 animate-pulse" />
           <span className="relative flex h-1.5 w-1.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -49,12 +49,13 @@ export const LiveClock: React.FC<LiveClockProps> = ({ className = '', showIcon =
         </div>
       )}
 
-      {/* Tanggal Hari Ini */}
+      {/* Tanggal Hari Ini (Responsive Nama Hari) */}
       <span className="font-semibold text-slate-900 dark:text-white mr-1.5">
-        {dayName}, {dateNum} {monthName} {year}
+        <span className="hidden md:inline">{dayName}, </span>
+        <span>{dateNum} {monthName} {year}</span>
       </span>
 
-      <span className="text-slate-300 dark:text-slate-600 mx-1 hidden sm:inline">&bull;</span>
+      <span className="text-slate-300 dark:text-slate-600 mx-1">&bull;</span>
 
       {/* Jam Digital Real-time dengan Tabular Nums */}
       <span className="font-bold text-sky-600 dark:text-sky-400 font-sans tabular-nums tracking-wide">
