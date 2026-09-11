@@ -21,6 +21,7 @@ import { ExcelUploadModal } from './components/ExcelUploadModal';
 import { SettingsModal } from './components/SettingsModal';
 import { DatabaseModal } from './components/DatabaseModal';
 import { PrintReportView } from './components/PrintReportView';
+import { NextAnimatedBackground } from './components/NextAnimatedBackground';
 import {
   fetchTasksFromApi,
   fetchMetadataFromApi,
@@ -31,7 +32,7 @@ import {
   checkDatabaseHealth,
 } from './services/apiService';
 
-const DEFAULT_CUTOFF_WEEK = DEFAULT_METADATA.cutoffWeek || 13;
+const DEFAULT_CUTOFF_WEEK = DEFAULT_METADATA.cutoffWeek || 1;
 
 export const App: React.FC = () => {
   // Persistence state
@@ -275,7 +276,10 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
+    <div className="relative min-h-screen bg-slate-50/80 dark:bg-[#07090e] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300">
+      {/* Anime.js Next.js Ambient Grid & Beam Background */}
+      <NextAnimatedBackground darkMode={darkMode} />
+
       {/* Header */}
       <Header
         metadata={metadata}
