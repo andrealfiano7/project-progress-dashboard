@@ -1,4 +1,18 @@
-import { prisma } from './_db';
+import { PrismaClient } from '@prisma/client';
+
+const NEON_DB_URL =
+  'postgresql://neondb_owner:npg_8jry2JKwGstd@ep-wandering-water-b3n7fufp-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+
+const prisma =
+  (globalThis as any).prismaClientGlobal ||
+  new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL || NEON_DB_URL,
+    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  (globalThis as any).prismaClientGlobal = prisma;
+}
 
 export default async function handler(req: any, res: any) {
   // Set CORS headers
@@ -68,13 +82,12 @@ export default async function handler(req: any, res: any) {
     // 3. PUT: Bulk upsert / sync all tasks (e.g. from Excel upload)
     if (req.method === 'PUT') {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const tasksList = Array.isArray(body) ? body : body.tasks;
+      const tasksList = Array.isArray(body) ? body : body?.tasks;
 
       if (!Array.isArray(tasksList)) {
         return res.status(400).json({ success: false, error: 'Request body must be an array of tasks or { tasks: [] }' });
       }
 
-      // Upsert each task sequentially or in transaction
       const results = [];
       for (const t of tasksList) {
         const item = await prisma.task.upsert({
@@ -93,7 +106,7 @@ export default async function handler(req: any, res: any) {
           },
           create: {
             id: Number(t.id),
-            phase: t.phase,
+            phase,
             task: t.task,
             output: t.output || '',
             pic: t.pic || '',

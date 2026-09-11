@@ -1,5 +1,19 @@
-import { prisma } from './_db';
+import { PrismaClient } from '@prisma/client';
 import { DEFAULT_TASKS, DEFAULT_METADATA } from '../src/data/defaultData';
+
+const NEON_DB_URL =
+  'postgresql://neondb_owner:npg_8jry2JKwGstd@ep-wandering-water-b3n7fufp-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
+
+const prisma =
+  (globalThis as any).prismaClientGlobal ||
+  new PrismaClient({
+    datasourceUrl: process.env.DATABASE_URL || NEON_DB_URL,
+    log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  (globalThis as any).prismaClientGlobal = prisma;
+}
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
