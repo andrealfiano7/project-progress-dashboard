@@ -5,7 +5,7 @@ export const DEFAULT_METADATA: ProjectMetadata = {
   institution: 'PT Angkasa Pura Indonesia (API)',
   contractor: 'Centrois Consulting',
   totalWeeks: 24,
-  cutoffWeek: 13, // Bulan ke-4, Minggu 1 (W13)
+  cutoffWeek: 1, // Bulan ke-1, Minggu 1 (W1)
   lastUpdated: 'September 2026',
   badgeText: 'Live Sync',
 };

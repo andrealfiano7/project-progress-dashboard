@@ -32,7 +32,7 @@ model ProjectMetadata {
   institution String   @default("PT Angkasa Pura Indonesia (API)")
   contractor  String   @default("Centrois Consulting")
   totalWeeks  Int      @default(24)
-  cutoffWeek  Int      @default(13)
+  cutoffWeek  Int      @default(1)
   badgeText   String   @default("Live Sync")
   lastUpdated String   @default("September 2026")
   createdAt   DateTime @default(now())
