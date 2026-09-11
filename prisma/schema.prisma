@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          Int      @id
+  phase       String
+  task        String
+  output      String?
+  pic         String?
+  target      Float    @default(1.0)
+  capaian     Float    @default(0.0)
+  progress    String   @default("Plan") // Completed | In Progress | Overdue | Plan
+  weeks       Int[]    @default([])
+  actualWeeks Int[]    @default([])
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tasks")
+}
+
+model ProjectMetadata {
+  id          String   @id @default("default")
+  title       String   @default("Timeline Implementasi BCM")
+  institution String   @default("PT Angkasa Pura Indonesia (API)")
+  contractor  String   @default("Centrois Consulting")
+  totalWeeks  Int      @default(24)
+  cutoffWeek  Int      @default(13)
+  badgeText   String   @default("Live Sync")
+  lastUpdated String   @default("September 2026")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("project_metadata")
+}

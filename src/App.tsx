@@ -19,19 +19,17 @@ import { TaskDetailModal } from './components/TaskDetailModal';
 import { EditTaskModal } from './components/EditTaskModal';
 import { ExcelUploadModal } from './components/ExcelUploadModal';
 import { SettingsModal } from './components/SettingsModal';
-import { SupabaseModal } from './components/SupabaseModal';
+import { DatabaseModal } from './components/DatabaseModal';
 import { PrintReportView } from './components/PrintReportView';
-import { isSupabaseConfigured } from './lib/supabase';
 import {
-  fetchTasksFromSupabase,
-  fetchMetadataFromSupabase,
-  upsertTaskToSupabase,
-  deleteTaskFromSupabase,
-  updateMetadataInSupabase,
-  syncAllTasksToSupabase,
-  resetSupabaseToDefaults,
-  subscribeToSupabaseRealtime,
-} from './services/supabaseService';
+  fetchTasksFromApi,
+  fetchMetadataFromApi,
+  upsertTaskToApi,
+  deleteTaskFromApi,
+  syncAllTasksToApi,
+  updateMetadataToApi,
+  checkDatabaseHealth,
+} from './services/apiService';
 
 export const App: React.FC = () => {
   // Persistence state
@@ -71,8 +69,8 @@ export const App: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
-  const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(() => isSupabaseConfigured());
+  const [isDatabaseModalOpen, setIsDatabaseModalOpen] = useState(false);
+  const [isDatabaseConnected, setIsDatabaseConnected] = useState<boolean>(false);
   const [tableStatusFilter, setTableStatusFilter] = useState<string>('All');
   const [tablePhaseFilter, setTablePhaseFilter] = useState<string>('');
 
@@ -104,46 +102,41 @@ export const App: React.FC = () => {
     localStorage.setItem('project_dashboard_cutoff', String(cutoffWeek));
   }, [cutoffWeek]);
 
-  // Supabase Initial Fetch and Realtime Subscription
+  // Neon PostgreSQL & Prisma API Initial Fetch and Polling Sync
   useEffect(() => {
-    if (!isSupabaseConnected) return;
+    // 1. Initial Health Check
+    checkDatabaseHealth().then((status) => {
+      setIsDatabaseConnected(!!status.connected);
+    });
 
-    // Load initial tasks from Supabase
-    fetchTasksFromSupabase().then((dbTasks) => {
+    // 2. Fetch Tasks from Neon DB
+    fetchTasksFromApi().then((dbTasks) => {
       if (dbTasks && dbTasks.length > 0) {
         setTasks(dbTasks);
+        setIsDatabaseConnected(true);
       }
     });
 
-    // Load initial metadata from Supabase
-    fetchMetadataFromSupabase().then((dbMeta) => {
+    // 3. Fetch Metadata from Neon DB
+    fetchMetadataFromApi().then((dbMeta) => {
       if (dbMeta) {
         setMetadata(dbMeta);
         setCutoffWeek(dbMeta.cutoffWeek);
       }
     });
 
-    // Listen to real-time changes across all connected devices
-    const unsubscribe = subscribeToSupabaseRealtime(
-      async () => {
-        const latestTasks = await fetchTasksFromSupabase();
-        if (latestTasks) {
-          setTasks(latestTasks);
+    // 4. Background Sync Polling (every 15s) for multi-device sync
+    const interval = setInterval(() => {
+      fetchTasksFromApi().then((dbTasks) => {
+        if (dbTasks && dbTasks.length > 0) {
+          setTasks(dbTasks);
+          setIsDatabaseConnected(true);
         }
-      },
-      async () => {
-        const latestMeta = await fetchMetadataFromSupabase();
-        if (latestMeta) {
-          setMetadata(latestMeta);
-          setCutoffWeek(latestMeta.cutoffWeek);
-        }
-      }
-    );
+      });
+    }, 15000);
 
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [isSupabaseConnected]);
+    return () => clearInterval(interval);
+  }, []);
 
   // Reactive calculations
   const stats = calculateProjectStats(tasks, cutoffWeek);
@@ -168,8 +161,8 @@ export const App: React.FC = () => {
       })
     );
 
-    if (updatedTask && isSupabaseConnected) {
-      upsertTaskToSupabase(updatedTask);
+    if (updatedTask) {
+      upsertTaskToApi(updatedTask);
     }
   };
 
@@ -183,17 +176,13 @@ export const App: React.FC = () => {
       }
     });
 
-    if (isSupabaseConnected) {
-      upsertTaskToSupabase(taskToSave);
-    }
+    upsertTaskToApi(taskToSave);
   };
 
   const handleDeleteTask = (taskId: number) => {
     if (window.confirm(`Apakah Anda yakin ingin menghapus item pekerjaan #${taskId}?`)) {
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
-      if (isSupabaseConnected) {
-        deleteTaskFromSupabase(taskId);
-      }
+      deleteTaskFromApi(taskId);
     }
   };
 
@@ -226,9 +215,8 @@ export const App: React.FC = () => {
       localStorage.removeItem('project_dashboard_metadata');
       localStorage.removeItem('project_dashboard_cutoff');
 
-      if (isSupabaseConnected) {
-        resetSupabaseToDefaults();
-      }
+      updateMetadataToApi(DEFAULT_METADATA);
+      syncAllTasksToApi(DEFAULT_TASKS);
     }
   };
 
@@ -236,25 +224,19 @@ export const App: React.FC = () => {
     setMetadata(result.metadata);
     setTasks(result.tasks);
 
-    if (isSupabaseConnected) {
-      updateMetadataInSupabase(result.metadata);
-      syncAllTasksToSupabase(result.tasks);
-    }
+    updateMetadataToApi(result.metadata);
+    syncAllTasksToApi(result.tasks);
   };
 
   const handleSaveMetadata = (newMetadata: ProjectMetadata) => {
     setMetadata(newMetadata);
-    if (isSupabaseConnected) {
-      updateMetadataInSupabase(newMetadata);
-    }
+    updateMetadataToApi(newMetadata);
   };
 
   const handleResetMetadata = () => {
     if (window.confirm('Kembalikan judul proyek dan identitas dashboard ke versi default?')) {
       setMetadata(DEFAULT_METADATA);
-      if (isSupabaseConnected) {
-        updateMetadataInSupabase(DEFAULT_METADATA);
-      }
+      updateMetadataToApi(DEFAULT_METADATA);
     }
   };
 
@@ -270,8 +252,8 @@ export const App: React.FC = () => {
         onPrint={() => window.print()}
         onResetData={handleResetData}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenSupabase={() => setIsSupabaseModalOpen(true)}
-        isSupabaseActive={isSupabaseConnected}
+        onOpenDatabase={() => setIsDatabaseModalOpen(true)}
+        isDatabaseActive={isDatabaseConnected}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         cutoffWeek={cutoffWeek}
@@ -399,16 +381,21 @@ export const App: React.FC = () => {
         metadata={metadata}
         onSave={handleSaveMetadata}
         onResetToDefault={handleResetMetadata}
-        onOpenSupabase={() => {
+        onOpenDatabase={() => {
           setIsSettingsOpen(false);
-          setIsSupabaseModalOpen(true);
+          setIsDatabaseModalOpen(true);
         }}
       />
 
-      <SupabaseModal
-        isOpen={isSupabaseModalOpen}
-        onClose={() => setIsSupabaseModalOpen(false)}
-        onConnectionChange={() => setIsSupabaseConnected(isSupabaseConfigured())}
+      <DatabaseModal
+        isOpen={isDatabaseModalOpen}
+        onClose={() => setIsDatabaseModalOpen(false)}
+        tasks={tasks}
+        metadata={metadata}
+        onDataRefreshed={() => {
+          fetchTasksFromApi().then((t) => t && setTasks(t));
+          fetchMetadataFromApi().then((m) => m && setMetadata(m));
+        }}
       />
     </div>
   );

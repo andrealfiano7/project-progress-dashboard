@@ -21,7 +21,7 @@ interface SettingsModalProps {
   metadata: ProjectMetadata;
   onSave: (newMetadata: ProjectMetadata) => void;
   onResetToDefault: () => void;
-  onOpenSupabase?: () => void;
+  onOpenDatabase?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -30,7 +30,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   metadata,
   onSave,
   onResetToDefault,
-  onOpenSupabase,
+  onOpenDatabase,
 }) => {
   const [formData, setFormData] = useState<ProjectMetadata>(metadata);
   const [isSaved, setIsSaved] = useState(false);
@@ -118,17 +118,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Template Cepat:
               </label>
-              {onOpenSupabase && (
+              {onOpenDatabase && (
                 <button
                   type="button"
                   onClick={() => {
                     onClose();
-                    onOpenSupabase();
+                    onOpenDatabase();
                   }}
                   className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center space-x-1"
                 >
                   <Database className="w-3.5 h-3.5" />
-                  <span>Kelola Database Supabase ➔</span>
+                  <span>Kelola Database Neon DB ➔</span>
                 </button>
               )}
             </div>
