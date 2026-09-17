@@ -146,12 +146,17 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
                 )}
                 {onOpenSettings && (
                   <button
-                    onClick={onOpenSettings}
-                    className="ml-2 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-semibold text-[10px] sm:text-xs inline-flex items-center cursor-pointer hover:underline"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onOpenSettings();
+                    }}
+                    className="ml-2 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-bold text-[10px] sm:text-xs inline-flex items-center cursor-pointer hover:underline px-1.5 py-0.5 rounded bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800"
                     title="Atur Tanggal Kick-off Meeting & Jadwal Proyek"
                   >
-                    <Settings className="w-3 h-3 mr-0.5" />
-                    Atur Kick-off
+                    <Settings className="w-3 h-3 mr-1 pointer-events-none" />
+                    <span className="pointer-events-none">Atur Kick-off</span>
                   </button>
                 )}
               </p>

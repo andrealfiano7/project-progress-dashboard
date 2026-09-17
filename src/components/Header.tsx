@@ -77,17 +77,26 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2">
           {/* Brand & Project Info */}
           <div className="flex items-center space-x-2 sm:space-x-3.5 min-w-0 flex-1">
-            <div 
-              onClick={onOpenSettings}
-              className="flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 shadow-md shadow-sky-500/20 text-white font-bold shrink-0 cursor-pointer hover:opacity-90 active:scale-95 transition-all"
+            <button 
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpenSettings();
+              }}
+              className="flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 shadow-md shadow-sky-500/20 text-white font-bold shrink-0 cursor-pointer hover:opacity-90 active:scale-95 transition-all border-none"
               title="Klik untuk membuka Pengaturan Identitas Proyek"
             >
-              <Layers className="w-4 h-4 sm:w-5 sm:h-5" />
-            </div>
+              <Layers className="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
+            </button>
             <div className="min-w-0 flex-1">
               <div className="flex items-center space-x-1.5 sm:space-x-2">
                 <h1 
-                  onClick={onOpenSettings}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onOpenSettings();
+                  }}
                   className="text-xs sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
                   title="Klik untuk mengubah judul proyek"
                 >
@@ -96,15 +105,19 @@ export const Header: React.FC<HeaderProps> = ({
                 
                 {/* Live Sync Animated Badge with Radar Pulse */}
                 <span 
-                  onClick={onOpenSettings}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onOpenSettings();
+                  }}
                   className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)] shrink-0 select-none cursor-pointer hover:bg-emerald-500/20 transition-all whitespace-nowrap"
                   title="Live Realtime Sync Aktif • Klik untuk mengatur"
                 >
-                  <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 mr-1 sm:mr-1.5">
+                  <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2 mr-1 sm:mr-1.5 pointer-events-none">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500"></span>
                   </span>
-                  <span className="tracking-wide font-bold">{metadata.badgeText || 'Live Sync'}</span>
+                  <span className="tracking-wide font-bold pointer-events-none">{metadata.badgeText || 'Live Sync'}</span>
                 </span>
               </div>
               <p className="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
@@ -114,12 +127,17 @@ export const Header: React.FC<HeaderProps> = ({
                   <span className="hidden sm:inline text-sky-600 dark:text-sky-400 font-medium">
                     {' '}&bull; Kick-off: <span className="font-semibold">{formatIndonesianDate(parseLocalDate(metadata.kickoffDate), false)}</span>
                     <button
-                      onClick={onOpenSettings}
-                      className="ml-1.5 px-1.5 py-0.5 rounded bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/60 dark:hover:bg-sky-800 text-sky-700 dark:text-sky-300 font-semibold text-[10px] transition-colors cursor-pointer inline-flex items-center"
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onOpenSettings();
+                      }}
+                      className="ml-1.5 px-2 py-0.5 rounded bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/60 dark:hover:bg-sky-800 text-sky-700 dark:text-sky-300 font-semibold text-[10px] transition-colors cursor-pointer inline-flex items-center"
                       title="Ubah Tanggal Kick-off Meeting & Pengaturan Proyek"
                     >
-                      <Calendar className="w-2.5 h-2.5 mr-0.5" />
-                      Ubah
+                      <Calendar className="w-2.5 h-2.5 mr-0.5 pointer-events-none" />
+                      <span className="pointer-events-none">Ubah</span>
                     </button>
                   </span>
                 )}
@@ -131,13 +149,18 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="hidden md:flex items-center space-x-1 sm:space-x-1.5 shrink-0">
             {/* Settings Button - High Visibility & Prominent */}
             <button
-              onClick={onOpenSettings}
-              className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-sm shadow-sky-500/20 transition-all active:scale-95 shrink-0 cursor-pointer"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpenSettings();
+              }}
+              className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white shadow-md shadow-sky-500/25 transition-all active:scale-95 shrink-0 cursor-pointer"
               title="Pengaturan Tanggal Kick-off, Judul & Identitas Proyek"
               aria-label="Buka Pengaturan"
             >
-              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 animate-[spin_12s_linear_infinite]" />
-              <span>Pengaturan</span>
+              <Settings className="w-4 h-4 mr-1.5 shrink-0 pointer-events-none" />
+              <span className="pointer-events-none">Pengaturan</span>
             </button>
 
             {/* Cut-off Week selector */}
@@ -315,12 +338,17 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* Direct Settings Button on Mobile */}
             <button
-              onClick={onOpenSettings}
-              className="p-1 px-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px] flex items-center space-x-1 active:scale-95 transition-all shadow-sm shadow-sky-500/20 cursor-pointer"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onOpenSettings();
+              }}
+              className="p-1 px-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-bold text-[11px] flex items-center space-x-1 active:scale-95 transition-all shadow-md shadow-sky-500/25 cursor-pointer"
               title="Buka Pengaturan Proyek & Tanggal Kick-off"
             >
-              <Settings className="w-3.5 h-3.5" />
-              <span>Setting</span>
+              <Settings className="w-3.5 h-3.5 shrink-0 pointer-events-none" />
+              <span className="pointer-events-none">Setting</span>
             </button>
 
             {/* Dark Mode Toggle */}
@@ -407,11 +435,17 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               <button
-                onClick={() => { onOpenSettings(); setIsMobileMenuOpen(false); }}
-                className="flex items-center p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold active:scale-95 transition-all shadow-sm"
+                type="button"
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMobileMenuOpen(false); 
+                  onOpenSettings(); 
+                }}
+                className="flex items-center p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold active:scale-95 transition-all shadow-sm cursor-pointer"
               >
-                <Settings className="w-4 h-4 text-white mr-2 shrink-0" />
-                <span>⚙️ Pengaturan</span>
+                <Settings className="w-4 h-4 text-white mr-2 shrink-0 pointer-events-none" />
+                <span className="pointer-events-none">⚙️ Pengaturan</span>
               </button>
 
               <button
