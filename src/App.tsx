@@ -358,6 +358,10 @@ export const App: React.FC = () => {
   };
 
   const handleSaveMetadata = (newMetadata: ProjectMetadata) => {
+    if (isViewer) {
+      alert('Akun Viewer hanya memiliki izin pantau (read-only). Masuk sebagai Administrator atau Project Manager untuk menyimpan perubahan.');
+      return;
+    }
     setMetadata(newMetadata);
     updateMetadataToApi(newMetadata);
 
@@ -371,6 +375,10 @@ export const App: React.FC = () => {
   };
 
   const handleResetMetadata = () => {
+    if (isViewer) {
+      alert('Akun Viewer tidak memiliki hak akses mereset pengaturan proyek.');
+      return;
+    }
     if (window.confirm('Kembalikan judul proyek dan identitas dashboard ke versi default?')) {
       setMetadata(DEFAULT_METADATA);
       setCutoffWeek(DEFAULT_CUTOFF_WEEK);
@@ -425,13 +433,7 @@ export const App: React.FC = () => {
           }
           handleResetData();
         }}
-        onOpenSettings={() => {
-          if (isViewer) {
-            alert('Akun Viewer tidak memiliki izin mengubah pengaturan identitas proyek.');
-            return;
-          }
-          setIsSettingsOpen(true);
-        }}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenDatabase={() => setIsDatabaseModalOpen(true)}
         isDatabaseActive={isDatabaseConnected}
         darkMode={darkMode}
@@ -502,6 +504,7 @@ export const App: React.FC = () => {
               cutoffWeek={cutoffWeek}
               onSelectTask={setSelectedTask}
               kickoffDate={metadata.kickoffDate}
+              onOpenSettings={() => setIsSettingsOpen(true)}
             />
           </div>
         )}
@@ -593,6 +596,7 @@ export const App: React.FC = () => {
           setIsSettingsOpen(false);
           setIsDatabaseModalOpen(true);
         }}
+        isViewer={isViewer}
       />
 
       <DatabaseModal

@@ -15,7 +15,8 @@ import {
   Database,
   LogOut,
   MoreVertical,
-  X
+  X,
+  Calendar
 } from 'lucide-react';
 import { ProjectMetadata } from '../types/timeline';
 import { AuthUser } from '../types/auth';
@@ -110,8 +111,16 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>{metadata.institution}</span>
                 <span className="hidden sm:inline"> &bull; Pelaksana: <span className="font-medium text-slate-600 dark:text-slate-300">{metadata.contractor}</span></span>
                 {metadata.kickoffDate && (
-                  <span className="hidden lg:inline text-sky-600 dark:text-sky-400 font-medium">
+                  <span className="hidden sm:inline text-sky-600 dark:text-sky-400 font-medium">
                     {' '}&bull; Kick-off: <span className="font-semibold">{formatIndonesianDate(parseLocalDate(metadata.kickoffDate), false)}</span>
+                    <button
+                      onClick={onOpenSettings}
+                      className="ml-1.5 px-1.5 py-0.5 rounded bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/60 dark:hover:bg-sky-800 text-sky-700 dark:text-sky-300 font-semibold text-[10px] transition-colors cursor-pointer inline-flex items-center"
+                      title="Ubah Tanggal Kick-off Meeting & Pengaturan Proyek"
+                    >
+                      <Calendar className="w-2.5 h-2.5 mr-0.5" />
+                      Ubah
+                    </button>
                   </span>
                 )}
               </p>
@@ -120,6 +129,17 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* DESKTOP Action Toolbar (Visible on md and up: >= 768px) */}
           <div className="hidden md:flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+            {/* Settings Button - High Visibility & Prominent */}
+            <button
+              onClick={onOpenSettings}
+              className="inline-flex items-center px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white shadow-sm shadow-sky-500/20 transition-all active:scale-95 shrink-0 cursor-pointer"
+              title="Pengaturan Tanggal Kick-off, Judul & Identitas Proyek"
+              aria-label="Buka Pengaturan"
+            >
+              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 animate-[spin_12s_linear_infinite]" />
+              <span>Pengaturan</span>
+            </button>
+
             {/* Cut-off Week selector */}
             <div className={`flex items-center rounded-xl p-1 px-2 sm:px-2.5 border text-xs transition-all ${
               isAutoCutoff
@@ -170,17 +190,6 @@ export const Header: React.FC<HeaderProps> = ({
                 {isDatabaseActive ? 'Neon DB' : 'Koneksi DB'}
               </span>
               <span className={`w-2 h-2 rounded-full ml-1 sm:ml-1.5 ${isDatabaseActive ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
-            </button>
-
-            {/* Settings Button */}
-            <button
-              onClick={onOpenSettings}
-              className="inline-flex items-center p-2 sm:px-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 transition-all shadow-sm active:scale-95 shrink-0"
-              title="Pengaturan Judul & Identitas Dashboard"
-              aria-label="Buka Pengaturan"
-            >
-              <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-sky-600 dark:text-sky-400" />
-              <span className="hidden 2xl:inline ml-1.5">Pengaturan</span>
             </button>
 
             {/* Upload Excel Button */}
@@ -304,6 +313,16 @@ export const Header: React.FC<HeaderProps> = ({
               </select>
             </div>
 
+            {/* Direct Settings Button on Mobile */}
+            <button
+              onClick={onOpenSettings}
+              className="p-1 px-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-[11px] flex items-center space-x-1 active:scale-95 transition-all shadow-sm shadow-sky-500/20 cursor-pointer"
+              title="Buka Pengaturan Proyek & Tanggal Kick-off"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Setting</span>
+            </button>
+
             {/* Dark Mode Toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -389,10 +408,10 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 onClick={() => { onOpenSettings(); setIsMobileMenuOpen(false); }}
-                className="flex items-center p-2.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 font-semibold active:scale-95 transition-all"
+                className="flex items-center p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold active:scale-95 transition-all shadow-sm"
               >
-                <Settings className="w-4 h-4 text-sky-500 mr-2 shrink-0" />
-                <span>Pengaturan</span>
+                <Settings className="w-4 h-4 text-white mr-2 shrink-0" />
+                <span>⚙️ Pengaturan</span>
               </button>
 
               <button

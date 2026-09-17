@@ -11,7 +11,8 @@ import {
   Sparkles, 
   ChevronRight, 
   User, 
-  Maximize2
+  Maximize2,
+  Settings
 } from 'lucide-react';
 
 interface GanttTimelineProps {
@@ -19,6 +20,7 @@ interface GanttTimelineProps {
   cutoffWeek: number;
   onSelectTask?: (task: TimelineTask) => void;
   kickoffDate?: string;
+  onOpenSettings?: () => void;
 }
 
 type ViewMode = 'fit' | 'detail' | 'cards';
@@ -28,6 +30,7 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
   cutoffWeek,
   onSelectTask,
   kickoffDate,
+  onOpenSettings,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('fit');
   const [selectedMonth, setSelectedMonth] = useState<'all' | number>('all');
@@ -140,6 +143,16 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
                   <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">
                     {' '}&bull; Rentang: <span className="font-semibold text-slate-700 dark:text-slate-300">{getWeekDateRange(kickoffDate, cutoffWeek)}</span>
                   </span>
+                )}
+                {onOpenSettings && (
+                  <button
+                    onClick={onOpenSettings}
+                    className="ml-2 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 font-semibold text-[10px] sm:text-xs inline-flex items-center cursor-pointer hover:underline"
+                    title="Atur Tanggal Kick-off Meeting & Jadwal Proyek"
+                  >
+                    <Settings className="w-3 h-3 mr-0.5" />
+                    Atur Kick-off
+                  </button>
                 )}
               </p>
             </div>

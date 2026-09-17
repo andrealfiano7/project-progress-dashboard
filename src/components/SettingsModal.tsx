@@ -15,7 +15,8 @@ import {
   Layers,
   Database,
   Clock,
-  Sparkles
+  Sparkles,
+  AlertTriangle
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -25,6 +26,7 @@ interface SettingsModalProps {
   onSave: (newMetadata: ProjectMetadata) => void;
   onResetToDefault: () => void;
   onOpenDatabase?: () => void;
+  isViewer?: boolean;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -34,6 +36,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onSave,
   onResetToDefault,
   onOpenDatabase,
+  isViewer = false,
 }) => {
   const [formData, setFormData] = useState<ProjectMetadata>(metadata);
   const [isSaved, setIsSaved] = useState(false);
@@ -57,6 +60,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isViewer) {
+      alert('Akun Viewer hanya memiliki hak akses pantau (read-only). Silakan masuk sebagai Administrator atau Project Manager untuk menyimpan perubahan.');
+      return;
+    }
     onSave(formData);
     setIsSaved(true);
     setTimeout(() => {
@@ -85,6 +92,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="settings-modal-title"
+      onClick={onClose}
     >
       <div 
         className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transition-all animate-scale-up"
@@ -101,7 +109,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 Pengaturan Judul &amp; Identitas Proyek
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Kustomisasi judul dashboard, nama institusi, pelaksana, dan status live sync
+                Kustomisasi tanggal kick-off, judul dashboard, institusi, dan pelaksana
               </p>
             </div>
           </div>
@@ -117,6 +125,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* Modal Body / Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[75vh] overflow-y-auto">
+          {/* Banner Peringatan jika Akun Viewer */}
+          {isViewer && (
+            <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs flex items-center">
+              <AlertTriangle className="w-4 h-4 mr-2 shrink-0 text-amber-500" />
+              <span>
+                <strong>Mode Pantau (Viewer):</strong> Anda dapat melihat seluruh konfigurasi dan tanggal kick-off. Untuk menyimpan perubahan, silakan keluar dan masuk sebagai <strong>Administrator</strong> atau <strong>Project Manager</strong>.
+              </span>
+            </div>
+          )}
           {/* Quick Presets & Database Connection Quick Link */}
           <div>
             <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
@@ -431,16 +448,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <button
                 type="submit"
                 className={`flex-1 sm:flex-none inline-flex items-center justify-center px-5 py-2 rounded-xl text-xs font-semibold text-white shadow-md transition-all active:scale-95 ${
-                  isSaved
+                  isViewer
+                    ? 'bg-slate-400 hover:bg-slate-500 cursor-pointer'
+                    : isSaved
                     ? 'bg-emerald-600 shadow-emerald-500/25'
                     : 'bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 shadow-sky-500/25'
                 }`}
+                title={isViewer ? 'Akun Viewer tidak dapat menyimpan perubahan' : 'Simpan Perubahan'}
               >
                 {isSaved ? (
                   <>
                     <Check className="w-4 h-4 mr-1.5" />
                     Tersimpan!
                   </>
+                ) : isViewer ? (
+                  'Mode Baca Saja (Viewer)'
                 ) : (
                   <>
                     <Save className="w-4 h-4 mr-1.5" />
