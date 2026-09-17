@@ -34,6 +34,8 @@ export interface ProjectMetadata {
   cutoffWeek: number; // Current week line, e.g. 13
   lastUpdated: string;
   badgeText?: string; // e.g. 'Live Sync' or 'Live Realtime'
+  kickoffDate?: string; // Tanggal Mulai Kick-off Meeting, format 'YYYY-MM-DD'
+  autoWeekCalculation?: boolean; // Menentukan apakah cut-off week diperbarui otomatis dari tanggal hari ini
 }
 
 export interface WeeklySCurvePoint {

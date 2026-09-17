@@ -267,3 +267,123 @@ export function getStatusBadge(status: TaskStatus) {
       };
   }
 }
+
+// ==========================================
+// KICK-OFF MEETING & AUTO-WEEK CALCULATION
+// ==========================================
+
+export interface KickoffWeekInfo {
+  kickoffDate: string; // 'YYYY-MM-DD'
+  calculatedWeek: number; // 1 to totalWeeks (clamped)
+  rawWeek: number; // unconstrained week number
+  daysElapsed: number; // hari berjalan sejak kick-off
+  isBeforeStart: boolean;
+  isCompleted: boolean;
+  startDateFormatted: string; // misal: "Selasa, 1 September 2026"
+  projectEndDateFormatted: string; // misal: "Senin, 15 Februari 2027"
+  currentWeekRangeFormatted: string; // misal: "15 Sep – 21 Sep 2026"
+  percentTimeElapsed: number; // 0 s/d 100%
+  totalProjectDays: number; // 24 * 7 = 168 hari
+}
+
+const INDONESIAN_MONTHS = [
+  'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
+
+const INDONESIAN_DAYS = [
+  'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'
+];
+
+export function parseLocalDate(dateStr: string): Date {
+  const parts = dateStr.split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10) - 1;
+    const d = parseInt(parts[2], 10);
+    return new Date(y, m, d);
+  }
+  return new Date();
+}
+
+export function formatIndonesianDate(date: Date, withDayName = true): string {
+  const dayName = INDONESIAN_DAYS[date.getDay()];
+  const day = date.getDate();
+  const month = INDONESIAN_MONTHS[date.getMonth()];
+  const year = date.getFullYear();
+  return withDayName ? `${dayName}, ${day} ${month} ${year}` : `${day} ${month} ${year}`;
+}
+
+export function getWeekDateRange(kickoffDateStr = '2026-09-01', weekNumber = 1): string {
+  try {
+    const startDate = parseLocalDate(kickoffDateStr);
+    const weekStart = new Date(startDate.getTime() + (weekNumber - 1) * 7 * 86400000);
+    const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
+
+    const startD = weekStart.getDate();
+    const endD = weekEnd.getDate();
+    const startM = INDONESIAN_MONTHS[weekStart.getMonth()].slice(0, 3);
+    const endM = INDONESIAN_MONTHS[weekEnd.getMonth()].slice(0, 3);
+    const year = weekEnd.getFullYear();
+
+    if (weekStart.getMonth() === weekEnd.getMonth()) {
+      return `${startD} – ${endD} ${endM} ${year}`;
+    }
+    return `${startD} ${startM} – ${endD} ${endM} ${year}`;
+  } catch {
+    return `W${weekNumber}`;
+  }
+}
+
+export function calculateKickoffWeekInfo(
+  kickoffDateStr = '2026-09-01',
+  totalWeeks = 24,
+  referenceDate?: Date
+): KickoffWeekInfo {
+  const startDate = parseLocalDate(kickoffDateStr);
+  const today = referenceDate || new Date();
+  const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const diffMs = currentDate.getTime() - startDate.getTime();
+  const daysElapsed = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const totalProjectDays = totalWeeks * 7;
+
+  let rawWeek = 1;
+  let calculatedWeek = 1;
+  const isBeforeStart = daysElapsed < 0;
+  const isCompleted = daysElapsed >= totalProjectDays;
+
+  if (isBeforeStart) {
+    rawWeek = Math.floor(daysElapsed / 7);
+    calculatedWeek = 1;
+  } else {
+    rawWeek = Math.floor(daysElapsed / 7) + 1;
+    calculatedWeek = Math.min(totalWeeks, Math.max(1, rawWeek));
+  }
+
+  // End date of project: start + totalProjectDays - 1 day
+  const endDate = new Date(startDate.getTime() + (totalProjectDays - 1) * 86400000);
+
+  // Current week range
+  const currentWeekRange = getWeekDateRange(kickoffDateStr, calculatedWeek);
+
+  const percentTimeElapsed = isBeforeStart
+    ? 0
+    : isCompleted
+    ? 100
+    : Math.min(100, Math.max(0, Math.round((daysElapsed / totalProjectDays) * 100)));
+
+  return {
+    kickoffDate: kickoffDateStr,
+    calculatedWeek,
+    rawWeek,
+    daysElapsed: Math.max(0, daysElapsed),
+    isBeforeStart,
+    isCompleted,
+    startDateFormatted: formatIndonesianDate(startDate, true),
+    projectEndDateFormatted: formatIndonesianDate(endDate, true),
+    currentWeekRangeFormatted: currentWeekRange,
+    percentTimeElapsed,
+    totalProjectDays,
+  };
+}

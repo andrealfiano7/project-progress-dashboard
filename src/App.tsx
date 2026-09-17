@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { TimelineTask, ProjectMetadata, TaskStatus } from './types/timeline';
 import { DEFAULT_TASKS, DEFAULT_METADATA } from './data/defaultData';
 import { 
   calculateProjectStats, 
   calculatePhaseSummaries, 
-  calculateSCurveData 
+  calculateSCurveData,
+  calculateKickoffWeekInfo 
 } from './utils/calculations';
 import { exportTasksToExcel, ParsedExcelResult } from './utils/excelParser';
 
@@ -55,7 +56,7 @@ export const App: React.FC = () => {
     const saved = localStorage.getItem('project_dashboard_metadata');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        return { ...DEFAULT_METADATA, ...JSON.parse(saved) };
       } catch (e) {
         console.error(e);
       }
@@ -63,8 +64,39 @@ export const App: React.FC = () => {
     return DEFAULT_METADATA;
   });
 
-  // Cut-off Week state: default W13, and remembers user's last selection on refresh
+  // Perhitungan Otomatis Minggu Berjalan dari Tanggal Kick-off Meeting
+  const autoWeekInfo = useMemo(() => {
+    return calculateKickoffWeekInfo(
+      metadata.kickoffDate || '2026-09-01',
+      metadata.totalWeeks || 24
+    );
+  }, [metadata.kickoffDate, metadata.totalWeeks]);
+
+  // Status apakah cut-off week mengikuti otomatis atau manual
+  const [isAutoCutoff, setIsAutoCutoff] = useState<boolean>(() => {
+    const saved = localStorage.getItem('project_dashboard_cutoff_is_auto');
+    if (saved !== null) {
+      return saved === 'true';
+    }
+    return metadata.autoWeekCalculation !== false;
+  });
+
+  // Cut-off Week state: terupdate otomatis dari Kick-off atau mengingat pilihan user
   const [cutoffWeek, setCutoffWeek] = useState<number>(() => {
+    const savedAuto = localStorage.getItem('project_dashboard_cutoff_is_auto');
+    const autoActive = savedAuto !== null ? savedAuto === 'true' : (DEFAULT_METADATA.autoWeekCalculation !== false);
+    if (autoActive) {
+      const savedMeta = localStorage.getItem('project_dashboard_metadata');
+      let kDate = DEFAULT_METADATA.kickoffDate;
+      if (savedMeta) {
+        try {
+          kDate = JSON.parse(savedMeta).kickoffDate || kDate;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      return calculateKickoffWeekInfo(kDate || '2026-09-01', 24).calculatedWeek;
+    }
     const saved = localStorage.getItem('project_dashboard_cutoff');
     if (saved) {
       const parsed = Number(saved);
@@ -74,6 +106,14 @@ export const App: React.FC = () => {
     }
     return DEFAULT_CUTOFF_WEEK;
   });
+
+  // Efek sinkronisasi otomatis ketika auto mode aktif
+  useEffect(() => {
+    if (isAutoCutoff && autoWeekInfo.calculatedWeek !== cutoffWeek) {
+      setCutoffWeek(autoWeekInfo.calculatedWeek);
+      localStorage.setItem('project_dashboard_cutoff', String(autoWeekInfo.calculatedWeek));
+    }
+  }, [isAutoCutoff, autoWeekInfo.calculatedWeek]);
 
   // UI state
   const [activeTab, setActiveTab] = useState<'overview' | 'gantt' | 'table' | 'analytics'>('overview');
@@ -133,23 +173,29 @@ export const App: React.FC = () => {
       }
     });
 
-    // 3. Fetch Metadata from Neon DB (Preserving user's last chosen cutoffWeek)
+    // 3. Fetch Metadata from Neon DB (Preserving user's last chosen cutoffWeek or auto-calculation)
     fetchMetadataFromApi().then((dbMeta) => {
       if (dbMeta) {
-        const savedCutoff = localStorage.getItem('project_dashboard_cutoff');
-        if (savedCutoff) {
-          const parsed = Number(savedCutoff);
-          if (!isNaN(parsed) && parsed >= 1 && parsed <= 24) {
-            setCutoffWeek(parsed);
-            setMetadata({ ...dbMeta, cutoffWeek: parsed });
-            return;
+        setMetadata((prev) => ({ ...prev, ...dbMeta }));
+        const autoActive = dbMeta.autoWeekCalculation !== false;
+        if (autoActive && dbMeta.kickoffDate) {
+          const autoInfo = calculateKickoffWeekInfo(dbMeta.kickoffDate, dbMeta.totalWeeks || 24);
+          setIsAutoCutoff(true);
+          setCutoffWeek(autoInfo.calculatedWeek);
+          localStorage.setItem('project_dashboard_cutoff_is_auto', 'true');
+          localStorage.setItem('project_dashboard_cutoff', String(autoInfo.calculatedWeek));
+        } else {
+          const savedCutoff = localStorage.getItem('project_dashboard_cutoff');
+          if (savedCutoff) {
+            const parsed = Number(savedCutoff);
+            if (!isNaN(parsed) && parsed >= 1 && parsed <= 24) {
+              setCutoffWeek(parsed);
+              return;
+            }
           }
+          const defaultCutoff = dbMeta.cutoffWeek || DEFAULT_CUTOFF_WEEK;
+          setCutoffWeek(defaultCutoff);
         }
-        // Jika belum ada pilihan terakhir di localStorage, gunakan default W13
-        const defaultCutoff = dbMeta.cutoffWeek || DEFAULT_CUTOFF_WEEK;
-        setCutoffWeek(defaultCutoff);
-        setMetadata({ ...dbMeta, cutoffWeek: defaultCutoff });
-        localStorage.setItem('project_dashboard_cutoff', String(defaultCutoff));
       }
     });
 
@@ -260,10 +306,27 @@ export const App: React.FC = () => {
   };
 
   const handleCutoffWeekChange = (newWeek: number) => {
+    if (newWeek === 0 || (newWeek === autoWeekInfo.calculatedWeek && !isAutoCutoff)) {
+      // 0 represents 'Auto'
+      setIsAutoCutoff(true);
+      localStorage.setItem('project_dashboard_cutoff_is_auto', 'true');
+      setCutoffWeek(autoWeekInfo.calculatedWeek);
+      localStorage.setItem('project_dashboard_cutoff', String(autoWeekInfo.calculatedWeek));
+      setMetadata((prev) => {
+        const updated = { ...prev, cutoffWeek: autoWeekInfo.calculatedWeek, autoWeekCalculation: true };
+        localStorage.setItem('project_dashboard_metadata', JSON.stringify(updated));
+        updateMetadataToApi(updated);
+        return updated;
+      });
+      return;
+    }
+
+    setIsAutoCutoff(false);
+    localStorage.setItem('project_dashboard_cutoff_is_auto', 'false');
     setCutoffWeek(newWeek);
     localStorage.setItem('project_dashboard_cutoff', String(newWeek));
     setMetadata((prev) => {
-      const updated = { ...prev, cutoffWeek: newWeek };
+      const updated = { ...prev, cutoffWeek: newWeek, autoWeekCalculation: false };
       localStorage.setItem('project_dashboard_metadata', JSON.stringify(updated));
       updateMetadataToApi(updated);
       return updated;
@@ -275,7 +338,9 @@ export const App: React.FC = () => {
       setTasks(DEFAULT_TASKS);
       setMetadata(DEFAULT_METADATA);
       setCutoffWeek(DEFAULT_CUTOFF_WEEK);
+      setIsAutoCutoff(DEFAULT_METADATA.autoWeekCalculation !== false);
       localStorage.setItem('project_dashboard_cutoff', String(DEFAULT_CUTOFF_WEEK));
+      localStorage.setItem('project_dashboard_cutoff_is_auto', String(DEFAULT_METADATA.autoWeekCalculation !== false));
       localStorage.removeItem('project_dashboard_tasks');
       localStorage.removeItem('project_dashboard_metadata');
 
@@ -295,13 +360,23 @@ export const App: React.FC = () => {
   const handleSaveMetadata = (newMetadata: ProjectMetadata) => {
     setMetadata(newMetadata);
     updateMetadataToApi(newMetadata);
+
+    if (newMetadata.autoWeekCalculation !== false && newMetadata.kickoffDate) {
+      const autoInfo = calculateKickoffWeekInfo(newMetadata.kickoffDate, newMetadata.totalWeeks || 24);
+      setIsAutoCutoff(true);
+      localStorage.setItem('project_dashboard_cutoff_is_auto', 'true');
+      setCutoffWeek(autoInfo.calculatedWeek);
+      localStorage.setItem('project_dashboard_cutoff', String(autoInfo.calculatedWeek));
+    }
   };
 
   const handleResetMetadata = () => {
     if (window.confirm('Kembalikan judul proyek dan identitas dashboard ke versi default?')) {
       setMetadata(DEFAULT_METADATA);
       setCutoffWeek(DEFAULT_CUTOFF_WEEK);
+      setIsAutoCutoff(DEFAULT_METADATA.autoWeekCalculation !== false);
       localStorage.setItem('project_dashboard_cutoff', String(DEFAULT_CUTOFF_WEEK));
+      localStorage.setItem('project_dashboard_cutoff_is_auto', String(DEFAULT_METADATA.autoWeekCalculation !== false));
       updateMetadataToApi({ ...DEFAULT_METADATA, cutoffWeek: DEFAULT_CUTOFF_WEEK });
     }
   };
@@ -363,6 +438,16 @@ export const App: React.FC = () => {
         setDarkMode={setDarkMode}
         cutoffWeek={cutoffWeek}
         setCutoffWeek={handleCutoffWeekChange}
+        isAutoCutoff={isAutoCutoff}
+        onToggleAutoCutoff={(val) => {
+          if (val) {
+            handleCutoffWeekChange(0);
+          } else {
+            setIsAutoCutoff(false);
+            localStorage.setItem('project_dashboard_cutoff_is_auto', 'false');
+          }
+        }}
+        autoCalculatedWeek={autoWeekInfo.calculatedWeek}
         user={currentUser}
         onLogout={() => {
           authService.logout();
@@ -416,6 +501,7 @@ export const App: React.FC = () => {
               tasks={tasks}
               cutoffWeek={cutoffWeek}
               onSelectTask={setSelectedTask}
+              kickoffDate={metadata.kickoffDate}
             />
           </div>
         )}

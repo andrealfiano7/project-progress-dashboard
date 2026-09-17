@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ProjectMetadata } from '../types/timeline';
+import { calculateKickoffWeekInfo } from '../utils/calculations';
 import { 
   Settings, 
   X, 
@@ -12,7 +13,9 @@ import {
   Activity, 
   Calendar,
   Layers,
-  Database
+  Database,
+  Clock,
+  Sparkles
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -45,7 +48,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleChange = (field: keyof ProjectMetadata, value: string | number) => {
+  const handleChange = (field: keyof ProjectMetadata, value: string | number | boolean) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -62,17 +65,19 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }, 600);
   };
 
-  const handleApplyPreset = (preset: {
-    title: string;
-    institution: string;
-    contractor: string;
-    badgeText: string;
-  }) => {
+  const handleApplyPreset = (preset: Partial<ProjectMetadata>) => {
     setFormData((prev) => ({
       ...prev,
       ...preset,
     }));
   };
+
+  const weekInfo = useMemo(() => {
+    return calculateKickoffWeekInfo(
+      formData.kickoffDate || '2026-09-01',
+      formData.totalWeeks || 24
+    );
+  }, [formData.kickoffDate, formData.totalWeeks]);
 
   return (
     <div 
@@ -141,6 +146,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     institution: 'PT Angkasa Pura Indonesia (API)',
                     contractor: 'Centrois Consulting',
                     badgeText: 'Live Sync',
+                    kickoffDate: '2026-09-01',
+                    autoWeekCalculation: true,
                   })
                 }
                 className="px-2.5 py-1 text-xs rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 hover:bg-sky-100 dark:hover:bg-sky-900/60 transition-colors font-medium"
@@ -155,6 +162,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     institution: 'Direktorat Sistem Informasi & Digitalisasi',
                     contractor: 'PT Solusi Teknologi Nusantara',
                     badgeText: 'Live Sync',
+                    kickoffDate: '2026-09-01',
+                    autoWeekCalculation: true,
                   })
                 }
                 className="px-2.5 py-1 text-xs rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors font-medium"
@@ -169,6 +178,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     institution: 'Kementerian Pekerjaan Umum & Tata Ruang',
                     contractor: 'PT Konstruksi Mandiri Sejahtera',
                     badgeText: 'Live Sync',
+                    kickoffDate: '2026-09-01',
+                    autoWeekCalculation: true,
                   })
                 }
                 className="px-2.5 py-1 text-xs rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors font-medium"
@@ -271,6 +282,99 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 placeholder="Contoh: September 2026"
                 className="w-full text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 transition-all"
               />
+            </div>
+          </div>
+
+          {/* Section: Kick-off Meeting & Otomatisasi Minggu (Auto Week Update) */}
+          <div className="p-4 rounded-2xl bg-sky-50/70 dark:bg-sky-950/40 border border-sky-200/80 dark:border-sky-800/80 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center space-x-2">
+                <div className="p-1.5 rounded-lg bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-400/30">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                    Tanggal Dimulainya Kick-off Meeting
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    Titik awal dimulainya Minggu ke-1 (W1) untuk perhitungan minggu otomatis
+                  </p>
+                </div>
+              </div>
+
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                <Sparkles className="w-3 h-3 mr-1" />
+                Otomatisasi Jadwal
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Tanggal Kick-off:
+                </label>
+                <input
+                  type="date"
+                  value={formData.kickoffDate || '2026-09-01'}
+                  onChange={(e) => handleChange('kickoffDate', e.target.value)}
+                  className="w-full text-xs sm:text-sm rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500/40 font-medium"
+                />
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                  Tanggal awal kickoff: <strong>{weekInfo.startDateFormatted}</strong>
+                </p>
+              </div>
+
+              {/* Checkbox Toggle Sinkronkan Otomatis */}
+              <div className="flex items-start space-x-2.5 p-3 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-700/80">
+                <input
+                  type="checkbox"
+                  id="autoWeekCheckbox"
+                  checked={formData.autoWeekCalculation !== false}
+                  onChange={(e) => handleChange('autoWeekCalculation', e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500 cursor-pointer"
+                />
+                <label htmlFor="autoWeekCheckbox" className="text-xs text-slate-700 dark:text-slate-200 cursor-pointer select-none">
+                  <span className="font-bold block text-slate-900 dark:text-white">
+                    Perbarui Minggu Otomatis Real-time
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block leading-tight mt-0.5">
+                    Minggu berjalan (cut-off) otomatis bertambah setiap 7 hari berdasarkan tanggal hari ini
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {/* Live Calculation Info Box */}
+            <div className="pt-2.5 border-t border-sky-100 dark:border-sky-900/60 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-sky-900/50 shadow-sm">
+                <span className="text-[10px] text-slate-400 block font-medium">Posisi Hari Ini:</span>
+                <span className="font-extrabold text-sky-600 dark:text-sky-400 text-sm block mt-0.5">
+                  Minggu ke-{weekInfo.calculatedWeek} (W{weekInfo.calculatedWeek})
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block truncate">
+                  Rentang: {weekInfo.currentWeekRangeFormatted}
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-sky-900/50 shadow-sm">
+                <span className="text-[10px] text-slate-400 block font-medium">Hari Berjalan:</span>
+                <span className="font-bold text-slate-800 dark:text-slate-100 text-sm block mt-0.5">
+                  Hari ke-{weekInfo.daysElapsed}
+                </span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
+                  {weekInfo.percentTimeElapsed}% dari 168 hari (24W)
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-sky-100 dark:border-sky-900/50 shadow-sm">
+                <span className="text-[10px] text-slate-400 block font-medium">Target Selesai Proyek:</span>
+                <span className="font-bold text-slate-800 dark:text-slate-100 text-sm block mt-0.5 truncate">
+                  {weekInfo.projectEndDateFormatted}
+                </span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 block font-semibold">
+                  {weekInfo.isCompleted ? '✓ Telah Selesai' : `${weekInfo.totalProjectDays - weekInfo.daysElapsed} hari lagi`}
+                </span>
+              </div>
             </div>
           </div>
 

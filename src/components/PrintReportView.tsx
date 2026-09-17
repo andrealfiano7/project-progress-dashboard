@@ -1,6 +1,6 @@
 import React from 'react';
 import { TimelineTask, ProjectMetadata } from '../types/timeline';
-import { ProjectStats } from '../utils/calculations';
+import { ProjectStats, formatIndonesianDate, parseLocalDate, getWeekDateRange } from '../utils/calculations';
 
 interface PrintReportViewProps {
   metadata: ProjectMetadata;
@@ -34,7 +34,12 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
         </div>
         <div className="text-right text-xs">
           <p className="font-bold">Periode Cut-off: Minggu ke-{cutoffWeek} (Bulan {currentMonth})</p>
-          <p className="text-slate-500">Tanggal Dokumen: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+          {metadata.kickoffDate && (
+            <p className="text-slate-600 font-medium">
+              Kick-off: {formatIndonesianDate(parseLocalDate(metadata.kickoffDate), false)} &bull; Rentang: {getWeekDateRange(metadata.kickoffDate, cutoffWeek)}
+            </p>
+          )}
+          <p className="text-slate-500">Tanggal Cetak: {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
         </div>
       </div>
 

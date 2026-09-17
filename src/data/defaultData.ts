@@ -8,6 +8,8 @@ export const DEFAULT_METADATA: ProjectMetadata = {
   cutoffWeek: 1, // Bulan ke-1, Minggu 1 (W1)
   lastUpdated: 'September 2026',
   badgeText: 'Live Sync',
+  kickoffDate: '2026-09-01', // Tanggal Mulai Kick-off Meeting
+  autoWeekCalculation: true,  // Otomatis sinkronkan cut-off week dengan tanggal hari ini
 };
 
 export const DEFAULT_TASKS: TimelineTask[] = [

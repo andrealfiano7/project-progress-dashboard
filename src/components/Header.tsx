@@ -20,6 +20,7 @@ import {
 import { ProjectMetadata } from '../types/timeline';
 import { AuthUser } from '../types/auth';
 import { LiveClock } from './LiveClock';
+import { formatIndonesianDate, parseLocalDate } from '../utils/calculations';
 
 interface HeaderProps {
   metadata: ProjectMetadata;
@@ -38,6 +39,9 @@ interface HeaderProps {
   setCutoffWeek: (week: number) => void;
   user?: AuthUser | null;
   onLogout?: () => void;
+  isAutoCutoff?: boolean;
+  onToggleAutoCutoff?: (val: boolean) => void;
+  autoCalculatedWeek?: number;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -57,6 +61,9 @@ export const Header: React.FC<HeaderProps> = ({
   setCutoffWeek,
   user,
   onLogout,
+  isAutoCutoff = false,
+  onToggleAutoCutoff,
+  autoCalculatedWeek,
 }) => {
   const currentMonth = Math.ceil(cutoffWeek / 4);
   const weekInMonth = ((cutoffWeek - 1) % 4) + 1;
@@ -102,6 +109,11 @@ export const Header: React.FC<HeaderProps> = ({
               <p className="text-[9px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 <span>{metadata.institution}</span>
                 <span className="hidden sm:inline"> &bull; Pelaksana: <span className="font-medium text-slate-600 dark:text-slate-300">{metadata.contractor}</span></span>
+                {metadata.kickoffDate && (
+                  <span className="hidden lg:inline text-sky-600 dark:text-sky-400 font-medium">
+                    {' '}&bull; Kick-off: <span className="font-semibold">{formatIndonesianDate(parseLocalDate(metadata.kickoffDate), false)}</span>
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -109,17 +121,34 @@ export const Header: React.FC<HeaderProps> = ({
           {/* DESKTOP Action Toolbar (Visible on md and up: >= 768px) */}
           <div className="hidden md:flex items-center space-x-1 sm:space-x-1.5 shrink-0">
             {/* Cut-off Week selector */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-xl p-1 px-2 sm:px-2.5 border border-slate-200/80 dark:border-slate-700/80 text-xs">
-              <span className="hidden sm:inline text-slate-500 dark:text-slate-400 mr-1.5 font-medium">Cut-off:</span>
+            <div className={`flex items-center rounded-xl p-1 px-2 sm:px-2.5 border text-xs transition-all ${
+              isAutoCutoff
+                ? 'bg-sky-50 dark:bg-sky-950/70 border-sky-300 dark:border-sky-700 shadow-sm shadow-sky-500/10'
+                : 'bg-slate-100 dark:bg-slate-800 border-slate-200/80 dark:border-slate-700/80'
+            }`}>
+              <span className="hidden sm:inline text-slate-500 dark:text-slate-400 mr-1.5 font-medium flex items-center">
+                {isAutoCutoff && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" title="Otomatis sinkron dengan tanggal kick-off" />}
+                Cut-off:
+              </span>
               <select
-                value={cutoffWeek}
-                onChange={(e) => setCutoffWeek(Number(e.target.value))}
-                className="bg-transparent font-semibold text-sky-600 dark:text-sky-400 focus:outline-none cursor-pointer text-[11px] sm:text-xs"
-                title="Pilih Minggu Cut-off Laporan"
+                value={isAutoCutoff && autoCalculatedWeek ? 0 : cutoffWeek}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setCutoffWeek(val);
+                }}
+                className={`bg-transparent font-bold focus:outline-none cursor-pointer text-[11px] sm:text-xs ${
+                  isAutoCutoff ? 'text-sky-700 dark:text-sky-300' : 'text-slate-700 dark:text-slate-200'
+                }`}
+                title={isAutoCutoff ? `Cut-off Otomatis Aktif (W${autoCalculatedWeek} hari ini)` : 'Pilih Minggu Cut-off Laporan'}
               >
+                {autoCalculatedWeek && (
+                  <option value={0} className="bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-300 font-bold">
+                    ⚡ Auto: W{autoCalculatedWeek} (Hari Ini)
+                  </option>
+                )}
                 {Array.from({ length: 24 }, (_, i) => i + 1).map((w) => (
                   <option key={w} value={w} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
-                    W{w} (M{Math.ceil(w / 4)}){w === 1 ? ' • Default' : ''}
+                    W{w} (M{Math.ceil(w / 4)}){w === autoCalculatedWeek ? ' • Hari Ini' : w === 1 ? ' • Kick-off' : ''}
                   </option>
                 ))}
               </select>
@@ -243,14 +272,30 @@ export const Header: React.FC<HeaderProps> = ({
           {/* MOBILE Compact Action Bar (Visible only on mobile: < 768px) */}
           <div className="flex md:hidden items-center space-x-1 shrink-0">
             {/* Cut-off selector compact */}
-            <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1 px-1.5 border border-slate-200 dark:border-slate-700 text-[11px]">
-              <span className="text-slate-400 mr-1 font-bold">W:</span>
+            <div className={`flex items-center rounded-lg p-1 px-1.5 border text-[11px] transition-all ${
+              isAutoCutoff
+                ? 'bg-sky-50 dark:bg-sky-950/80 border-sky-300 dark:border-sky-700'
+                : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+            }`}>
+              <span className={`mr-1 font-bold ${isAutoCutoff ? 'text-sky-600 dark:text-sky-400' : 'text-slate-400'}`}>
+                {isAutoCutoff ? '⚡W:' : 'W:'}
+              </span>
               <select
-                value={cutoffWeek}
-                onChange={(e) => setCutoffWeek(Number(e.target.value))}
-                className="bg-transparent font-bold text-sky-600 dark:text-sky-400 focus:outline-none cursor-pointer"
-                title="Pilih Minggu Cut-off"
+                value={isAutoCutoff && autoCalculatedWeek ? 0 : cutoffWeek}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setCutoffWeek(val);
+                }}
+                className={`bg-transparent font-bold focus:outline-none cursor-pointer ${
+                  isAutoCutoff ? 'text-sky-700 dark:text-sky-300' : 'text-slate-800 dark:text-slate-200'
+                }`}
+                title={isAutoCutoff ? `Cut-off Otomatis (W${autoCalculatedWeek} hari ini)` : 'Pilih Minggu Cut-off'}
               >
+                {autoCalculatedWeek && (
+                  <option value={0} className="bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-300 font-bold">
+                    ⚡ Auto W{autoCalculatedWeek}
+                  </option>
+                )}
                 {Array.from({ length: 24 }, (_, i) => i + 1).map((w) => (
                   <option key={w} value={w} className="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200">
                     W{w}
@@ -303,9 +348,17 @@ export const Header: React.FC<HeaderProps> = ({
         {/* MOBILE POPUP ACTION MENU DRAWER */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-slate-200 dark:border-slate-800 py-3 px-1 animate-fadeIn bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
-            {/* Live Clock Info inside Mobile Menu */}
-            <div className="mb-3 flex justify-center">
-              <LiveClock />
+            {/* Kick-off & Live Clock Info inside Mobile Menu */}
+            <div className="mb-3 space-y-1.5 text-center">
+              <div className="flex justify-center">
+                <LiveClock />
+              </div>
+              {metadata.kickoffDate && (
+                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                  <span>📅 Kick-off: {formatIndonesianDate(parseLocalDate(metadata.kickoffDate), false)}</span>
+                  {isAutoCutoff && <span className="ml-1.5 font-bold text-emerald-600 dark:text-emerald-400">⚡ Auto W{cutoffWeek}</span>}
+                </div>
+              )}
             </div>
 
             {/* Grid of Action Buttons on Mobile */}
@@ -441,6 +494,25 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-bold font-sans tabular-nums">
                 Bulan {currentMonth}, M{weekInMonth} (W{cutoffWeek})
               </span>
+              {isAutoCutoff ? (
+                <button
+                  type="button"
+                  onClick={() => onToggleAutoCutoff && onToggleAutoCutoff(false)}
+                  className="ml-1.5 px-1.5 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-800 dark:text-amber-200 text-[10px] font-bold transition-colors cursor-pointer"
+                  title="Minggu otomatis dihitung dari tanggal Kick-off (Klik untuk beralih ke manual)"
+                >
+                  ⚡ Auto
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onToggleAutoCutoff && onToggleAutoCutoff(true)}
+                  className="ml-1.5 px-1.5 py-0.5 rounded bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-[10px] font-medium transition-colors cursor-pointer"
+                  title="Klik untuk beralih ke cut-off otomatis real-time"
+                >
+                  Manual
+                </button>
+              )}
             </div>
           </div>
 

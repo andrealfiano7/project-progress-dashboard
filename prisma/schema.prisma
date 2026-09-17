@@ -31,12 +31,14 @@ model ProjectMetadata {
   title       String   @default("Timeline Implementasi BCM")
   institution String   @default("PT Angkasa Pura Indonesia (API)")
   contractor  String   @default("Centrois Consulting")
-  totalWeeks  Int      @default(24)
-  cutoffWeek  Int      @default(1)
-  badgeText   String   @default("Live Sync")
-  lastUpdated String   @default("September 2026")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  totalWeeks          Int      @default(24)
+  cutoffWeek          Int      @default(1)
+  badgeText           String   @default("Live Sync")
+  lastUpdated         String   @default("September 2026")
+  kickoffDate         String?  @default("2026-09-01")
+  autoWeekCalculation Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@map("project_metadata")
 }

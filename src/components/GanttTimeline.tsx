@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { TimelineTask } from '../types/timeline';
-import { getStatusBadge } from '../utils/calculations';
+import { getStatusBadge, getWeekDateRange } from '../utils/calculations';
 import { 
   Calendar, 
   Check, 
@@ -18,6 +18,7 @@ interface GanttTimelineProps {
   tasks: TimelineTask[];
   cutoffWeek: number;
   onSelectTask?: (task: TimelineTask) => void;
+  kickoffDate?: string;
 }
 
 type ViewMode = 'fit' | 'detail' | 'cards';
@@ -26,6 +27,7 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
   tasks,
   cutoffWeek,
   onSelectTask,
+  kickoffDate,
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('fit');
   const [selectedMonth, setSelectedMonth] = useState<'all' | number>('all');
@@ -134,6 +136,11 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
                 <span className="text-amber-600 dark:text-amber-400 font-semibold">
                   Garis Cut-off: W{cutoffWeek} (Bulan {currentCutoffMonth})
                 </span>
+                {kickoffDate && (
+                  <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">
+                    {' '}&bull; Rentang: <span className="font-semibold text-slate-700 dark:text-slate-300">{getWeekDateRange(kickoffDate, cutoffWeek)}</span>
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -379,10 +386,12 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
                         </span>
                         {task.weeks.map((w) => {
                           const isCurrent = w === cutoffWeek;
+                          const weekRange = kickoffDate ? getWeekDateRange(kickoffDate, w) : undefined;
                           return (
                             <span
                               key={w}
-                              className={`text-[10px] px-1.5 py-0.5 rounded font-bold tabular-nums ${
+                              title={weekRange ? `Minggu ${w} (${weekRange})` : undefined}
+                              className={`text-[10px] px-1.5 py-0.5 rounded font-bold tabular-nums cursor-default ${
                                 isCurrent
                                   ? 'bg-amber-400 text-slate-900 ring-1 ring-amber-500 shadow-sm shadow-amber-500/20'
                                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
@@ -500,10 +509,12 @@ export const GanttTimeline: React.FC<GanttTimelineProps> = ({
                 {/* Week Cells */}
                 {activeWeeks.map((w) => {
                   const isCutoff = w === cutoffWeek;
+                  const dateRange = kickoffDate ? getWeekDateRange(kickoffDate, w) : '';
                   return (
                     <div
                       key={w}
-                      className={`p-1 sm:p-1.5 text-center border-r border-slate-200/80 dark:border-slate-800/80 tabular-nums transition-colors relative flex flex-col items-center justify-center ${
+                      title={`Minggu ${w}${dateRange ? `: ${dateRange}` : ''}`}
+                      className={`p-1 sm:p-1.5 text-center border-r border-slate-200/80 dark:border-slate-800/80 tabular-nums transition-colors relative flex flex-col items-center justify-center cursor-default ${
                         isCutoff
                           ? 'bg-amber-400/25 dark:bg-amber-400/20 text-amber-700 dark:text-amber-300 font-black border-x-2 border-amber-500/80 shadow-[inset_0_0_6px_rgba(245,158,11,0.15)] z-10'
                           : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-850'

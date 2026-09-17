@@ -46,6 +46,8 @@ export default async function handler(req: any, res: any) {
             cutoffWeek: 1,
             badgeText: 'Live Sync',
             lastUpdated: 'September 2026',
+            kickoffDate: '2026-09-01',
+            autoWeekCalculation: true,
           },
         });
       }
@@ -56,7 +58,17 @@ export default async function handler(req: any, res: any) {
     // 2. POST / PUT: Update Project Metadata
     if (req.method === 'POST' || req.method === 'PUT') {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-      const { title, institution, contractor, totalWeeks, cutoffWeek, badgeText, lastUpdated } = body;
+      const { 
+        title, 
+        institution, 
+        contractor, 
+        totalWeeks, 
+        cutoffWeek, 
+        badgeText, 
+        lastUpdated,
+        kickoffDate,
+        autoWeekCalculation
+      } = body;
 
       const updated = await prisma.projectMetadata.upsert({
         where: { id: 'default' },
@@ -68,6 +80,8 @@ export default async function handler(req: any, res: any) {
           ...(cutoffWeek !== undefined && { cutoffWeek: Number(cutoffWeek) }),
           ...(badgeText !== undefined && { badgeText }),
           ...(lastUpdated !== undefined && { lastUpdated }),
+          ...(kickoffDate !== undefined && { kickoffDate }),
+          ...(autoWeekCalculation !== undefined && { autoWeekCalculation: Boolean(autoWeekCalculation) }),
         },
         create: {
           id: 'default',
@@ -78,6 +92,8 @@ export default async function handler(req: any, res: any) {
           cutoffWeek: Number(cutoffWeek || 1),
           badgeText: badgeText || 'Live Sync',
           lastUpdated: lastUpdated || 'September 2026',
+          kickoffDate: kickoffDate || '2026-09-01',
+          autoWeekCalculation: autoWeekCalculation !== undefined ? Boolean(autoWeekCalculation) : true,
         },
       });
 
