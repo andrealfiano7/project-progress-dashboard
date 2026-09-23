@@ -79,11 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center space-x-2 sm:space-x-3.5 min-w-0 flex-1">
             <button 
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onOpenSettings();
-              }}
+              onClick={() => onOpenSettings()}
               className="flex items-center justify-center w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-sky-600 to-indigo-600 shadow-md shadow-sky-500/20 text-white font-bold shrink-0 cursor-pointer hover:opacity-90 active:scale-95 transition-all border-none"
               title="Klik untuk membuka Pengaturan Identitas Proyek"
             >
@@ -92,11 +88,7 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="min-w-0 flex-1">
               <div className="flex items-center space-x-1.5 sm:space-x-2">
                 <h1 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenSettings();
-                  }}
+                  onClick={() => onOpenSettings()}
                   className="text-xs sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-white truncate cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition-colors"
                   title="Klik untuk mengubah judul proyek"
                 >
@@ -105,11 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
                 
                 {/* Live Sync Animated Badge with Radar Pulse */}
                 <span 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onOpenSettings();
-                  }}
+                  onClick={() => onOpenSettings()}
                   className="inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 dark:border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.15)] shrink-0 select-none cursor-pointer hover:bg-emerald-500/20 transition-all whitespace-nowrap"
                   title="Live Realtime Sync Aktif • Klik untuk mengatur"
                 >
@@ -128,11 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
                     {' '}&bull; Kick-off: <span className="font-semibold">{formatIndonesianDate(parseLocalDate(metadata.kickoffDate), false)}</span>
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onOpenSettings();
-                      }}
+                      onClick={() => onOpenSettings()}
                       className="ml-1.5 px-2 py-0.5 rounded bg-sky-100 hover:bg-sky-200 dark:bg-sky-900/60 dark:hover:bg-sky-800 text-sky-700 dark:text-sky-300 font-semibold text-[10px] transition-colors cursor-pointer inline-flex items-center"
                       title="Ubah Tanggal Kick-off Meeting & Pengaturan Proyek"
                     >
@@ -150,11 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Settings Button - High Visibility & Prominent */}
             <button
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onOpenSettings();
-              }}
+              onClick={() => onOpenSettings()}
               className="inline-flex items-center px-3 py-2 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white shadow-md shadow-sky-500/25 transition-all active:scale-95 shrink-0 cursor-pointer"
               title="Pengaturan Tanggal Kick-off, Judul & Identitas Proyek"
               aria-label="Buka Pengaturan"
@@ -339,11 +319,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Direct Settings Button on Mobile */}
             <button
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onOpenSettings();
-              }}
+              onClick={() => onOpenSettings()}
               className="p-1 px-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-bold text-[11px] flex items-center space-x-1 active:scale-95 transition-all shadow-md shadow-sky-500/25 cursor-pointer"
               title="Buka Pengaturan Proyek & Tanggal Kick-off"
             >
@@ -436,9 +412,7 @@ export const Header: React.FC<HeaderProps> = ({
 
               <button
                 type="button"
-                onClick={(e) => { 
-                  e.preventDefault();
-                  e.stopPropagation();
+                onClick={() => { 
                   setIsMobileMenuOpen(false); 
                   onOpenSettings(); 
                 }}

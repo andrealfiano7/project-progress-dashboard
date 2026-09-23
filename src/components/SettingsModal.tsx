@@ -88,21 +88,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
       aria-labelledby="settings-modal-title"
     >
-      {/* Background click overlay */}
-      <div 
-        className="fixed inset-0 bg-transparent" 
-        onClick={onClose} 
-        aria-hidden="true" 
-      />
-
       {/* Modal Dialog Card */}
       <div 
         className="relative z-10 w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-850 shrink-0">
@@ -225,7 +219,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <input
               type="text"
               required
-              value={formData.title}
+              value={formData.title || ''}
               onChange={(e) => handleChange('title', e.target.value)}
               placeholder="Contoh: Timeline Implementasi BCM"
               className="w-full text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 transition-all"
@@ -245,7 +239,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <input
                 type="text"
                 required
-                value={formData.institution}
+                value={formData.institution || ''}
                 onChange={(e) => handleChange('institution', e.target.value)}
                 placeholder="Contoh: PT Angkasa Pura Indonesia (API)"
                 className="w-full text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 transition-all"
@@ -263,7 +257,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <input
                 type="text"
                 required
-                value={formData.contractor}
+                value={formData.contractor || ''}
                 onChange={(e) => handleChange('contractor', e.target.value)}
                 placeholder="Contoh: Centrois Consulting"
                 className="w-full text-xs sm:text-sm rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 px-3.5 py-2.5 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 transition-all"
