@@ -139,8 +139,8 @@ export const Header: React.FC<HeaderProps> = ({
               title="Pengaturan Tanggal Kick-off, Judul & Identitas Proyek"
               aria-label="Buka Pengaturan"
             >
-              <Settings className="w-4 h-4 mr-1.5 shrink-0 pointer-events-none" />
-              <span className="pointer-events-none">Pengaturan</span>
+              <Settings className="w-4 h-4 mr-1.5 shrink-0" />
+              <span>Pengaturan</span>
             </button>
 
             {/* Cut-off Week selector */}
@@ -323,8 +323,8 @@ export const Header: React.FC<HeaderProps> = ({
               className="p-1 px-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 active:bg-sky-700 text-white font-bold text-[11px] flex items-center space-x-1 active:scale-95 transition-all shadow-md shadow-sky-500/25 cursor-pointer"
               title="Buka Pengaturan Proyek & Tanggal Kick-off"
             >
-              <Settings className="w-3.5 h-3.5 shrink-0 pointer-events-none" />
-              <span className="pointer-events-none">Setting</span>
+              <Settings className="w-3.5 h-3.5 shrink-0" />
+              <span>Setting</span>
             </button>
 
             {/* Dark Mode Toggle */}
@@ -418,8 +418,8 @@ export const Header: React.FC<HeaderProps> = ({
                 }}
                 className="flex items-center p-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold active:scale-95 transition-all shadow-sm cursor-pointer"
               >
-                <Settings className="w-4 h-4 text-white mr-2 shrink-0 pointer-events-none" />
-                <span className="pointer-events-none">⚙️ Pengaturan</span>
+                <Settings className="w-4 h-4 text-white mr-2 shrink-0" />
+                <span>⚙️ Pengaturan</span>
               </button>
 
               <button

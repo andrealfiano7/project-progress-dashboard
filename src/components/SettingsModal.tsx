@@ -49,6 +49,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }
   }, [isOpen, metadata]);
 
+  const weekInfo = useMemo(() => {
+    return calculateKickoffWeekInfo(
+      formData.kickoffDate || '2026-09-01',
+      formData.totalWeeks || 24
+    );
+  }, [formData.kickoffDate, formData.totalWeeks]);
+
   if (!isOpen) return null;
 
   const handleChange = (field: keyof ProjectMetadata, value: string | number | boolean) => {
@@ -78,13 +85,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       ...preset,
     }));
   };
-
-  const weekInfo = useMemo(() => {
-    return calculateKickoffWeekInfo(
-      formData.kickoffDate || '2026-09-01',
-      formData.totalWeeks || 24
-    );
-  }, [formData.kickoffDate, formData.totalWeeks]);
 
   return (
     <div 

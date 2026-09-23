@@ -17,8 +17,6 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
   onSave,
   existingPhases,
 }) => {
-  if (!isOpen) return null;
-
   const [formData, setFormData] = useState<TimelineTask>({
     id: Date.now(),
     phase: existingPhases[0] || 'FASE 0 - INISIASI PROYEK',
@@ -50,6 +48,8 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({
       });
     }
   }, [task, isOpen]);
+
+  if (!isOpen) return null;
 
   const toggleWeek = (week: number) => {
     setFormData((prev) => {
